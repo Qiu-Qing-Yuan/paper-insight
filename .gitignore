@@ -11,3 +11,4 @@ client/public/data/
 *.local
 data/
 !data/.gitkeep
+requirements.txt
