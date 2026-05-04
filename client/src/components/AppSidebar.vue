@@ -170,17 +170,28 @@ function isActive(path: string) {
       </div>
     </div>
 
-    <!-- User Menu -->
-    <Teleport to="body">
-      <Transition name="menu-pop">
-        <div v-if="userMenuOpen" class="user-menu" :class="{ 'menu-expanded': expanded }">
-          <div class="menu-item" @click="navigateTo('/user')">个人中心</div>
-          <div class="menu-item" @click="navigateTo('/favorites')">我的收藏</div>
-          <div class="menu-item" @click="navigateTo('/history')">浏览历史</div>
-          <div class="menu-divider"></div>
-          <div class="menu-item" @click="store.loadPapers(); userMenuOpen = false">刷新数据</div>
-        </div>
-      </Transition>
-    </Teleport>
+    <!-- User Menu: inside sidebar when expanded -->
+    <Transition name="menu-pop">
+      <div v-if="userMenuOpen && expanded" class="user-menu">
+        <div class="menu-item" @click="navigateTo('/user')">个人中心</div>
+        <div class="menu-item" @click="navigateTo('/favorites')">我的收藏</div>
+        <div class="menu-item" @click="navigateTo('/history')">浏览历史</div>
+        <div class="menu-divider"></div>
+        <div class="menu-item" @click="store.loadPapers(); userMenuOpen = false">刷新数据</div>
+      </div>
+    </Transition>
   </aside>
+
+  <!-- User Menu: outside sidebar when collapsed (teleported to body) -->
+  <Teleport to="body">
+    <Transition name="menu-pop">
+      <div v-if="userMenuOpen && !expanded" class="user-menu user-menu-external">
+        <div class="menu-item" @click="navigateTo('/user')">个人中心</div>
+        <div class="menu-item" @click="navigateTo('/favorites')">我的收藏</div>
+        <div class="menu-item" @click="navigateTo('/history')">浏览历史</div>
+        <div class="menu-divider"></div>
+        <div class="menu-item" @click="store.loadPapers(); userMenuOpen = false">刷新数据</div>
+      </div>
+    </Transition>
+  </Teleport>
 </template>
