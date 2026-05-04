@@ -53,19 +53,22 @@ function isActive(path: string) {
 
 <template>
   <aside class="sidebar" :class="{ expanded }" @mouseleave="userMenuOpen = false">
-    <!-- Top: Expand button -->
-    <div class="sidebar-top" @click="expanded = true" v-show="!expanded">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="9 18 15 12 9 6"/>
-      </svg>
-    </div>
-
-    <!-- Brand -->
-    <div class="sidebar-brand" @click="expanded = true">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>
-      </svg>
-      <span class="sidebar-brand-text">Paper Insight</span>
+    <!-- Top: Brand + Toggle -->
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>
+        </svg>
+        <span class="sidebar-brand-text">Paper Insight</span>
+      </div>
+      <div class="sidebar-toggle" @click="expanded = !expanded">
+        <svg v-if="!expanded" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+        <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </div>
     </div>
 
     <!-- Navigation -->
@@ -142,14 +145,6 @@ function isActive(path: string) {
       <div class="sidebar-item sidebar-user" @click="userMenuOpen = !userMenuOpen">
         <div class="item-icon-wrap"><div class="user-avatar">U</div></div>
         <span class="item-label">用户</span>
-      </div>
-
-      <!-- Collapse button -->
-      <div class="sidebar-collapse-btn" @click="expanded = false" v-show="expanded">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="15 18 9 12 15 6"/>
-        </svg>
-        <span>收起</span>
       </div>
     </div>
 
