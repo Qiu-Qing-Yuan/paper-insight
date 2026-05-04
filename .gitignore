@@ -7,7 +7,6 @@ dist/
 build/
 site/
 client/dist/
-client/public/data/
 *.local
 data/
 !data/.gitkeep
