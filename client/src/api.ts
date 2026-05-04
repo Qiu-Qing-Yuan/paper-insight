@@ -1,22 +1,9 @@
 import type { Paper, Progress, Conference } from './types'
 
-// Auto-detect: if /api/papers returns 404, use static JSON files
-let useStatic = false
-
-async function checkStaticMode() {
-  try {
-    const r = await fetch('/api/papers', { method: 'HEAD' })
-    if (!r.ok) useStatic = true
-  } catch {
-    useStatic = true
-  }
-}
-
-// Run check once on module load
-const staticCheck = checkStaticMode()
+// Production builds (Vercel) use static JSON; dev uses Express API
+const useStatic = import.meta.env.PROD
 
 export async function fetchPapers(): Promise<Paper[]> {
-  await staticCheck
   if (useStatic) {
     const r = await fetch('/data/papers.json')
     return r.json()
@@ -27,7 +14,6 @@ export async function fetchPapers(): Promise<Paper[]> {
 }
 
 export async function fetchKeywords(lang: string, sub?: string): Promise<[string, number][]> {
-  await staticCheck
   if (useStatic) {
     const r = await fetch(`/data/keywords-${lang}.json`)
     return r.json()
@@ -56,7 +42,6 @@ export async function fetchProgress(): Promise<Progress> {
 // ===== External conference APIs =====
 
 export async function fetchConferences(): Promise<Conference[]> {
-  await staticCheck
   if (useStatic) {
     return [
       {
@@ -64,6 +49,13 @@ export async function fetchConferences(): Promise<Conference[]> {
         entries: [
           { year: 2024, key: 'ICML-2024', paperCount: 0, lastUpdated: null, status: 'not_loaded' },
           { year: 2025, key: 'ICML-2025', paperCount: 0, lastUpdated: null, status: 'not_loaded' },
+        ]
+      },
+      {
+        id: 'EMNLP', name: 'EMNLP', years: [2024, 2025], description: 'Empirical Methods in Natural Language Processing',
+        entries: [
+          { year: 2024, key: 'EMNLP-2024', paperCount: 0, lastUpdated: null, status: 'not_loaded' },
+          { year: 2025, key: 'EMNLP-2025', paperCount: 0, lastUpdated: null, status: 'not_loaded' },
         ]
       },
       {
@@ -81,11 +73,13 @@ export async function fetchConferences(): Promise<Conference[]> {
 }
 
 export async function fetchExternalPapers(conference: string, year: number = 2024): Promise<Paper[]> {
-  await staticCheck
   if (useStatic) {
-    const r = await fetch(`/data/external-${conference}-${year}.json`)
-    if (!r.ok) return []
-    return r.json()
+    // Fetch from Vercel serverless function
+    try {
+      const r = await fetch(`/api/external?conference=${conference}&year=${year}`)
+      if (!r.ok) return []
+      return r.json()
+    } catch { return [] }
   }
   const r = await fetch(`/api/external/papers/${conference}?year=${year}`)
   if (!r.ok) throw new Error('HTTP ' + r.status)
@@ -93,21 +87,15 @@ export async function fetchExternalPapers(conference: string, year: number = 202
 }
 
 export async function fetchAllExternalPapers(): Promise<Paper[]> {
+  if (useStatic) return []
   const r = await fetch('/api/external/all')
   if (!r.ok) throw new Error('HTTP ' + r.status)
   return r.json()
 }
 
 export async function triggerExternalUpdate(conference: string, year: number = 2024): Promise<{ status: string }> {
-  await staticCheck
   if (useStatic) {
-    // In static mode, fetch directly from the serverless function
-    const r = await fetch(`/api/external?conference=${conference}&year=${year}`)
-    if (r.ok) {
-      const papers = await r.json()
-      // Store in localStorage for persistence
-      localStorage.setItem(`external_${conference}_${year}`, JSON.stringify(papers))
-    }
+    // In static mode, the serverless function fetches on demand
     return { status: 'ok' }
   }
   const r = await fetch(`/api/external/update/${conference}?year=${year}`)
