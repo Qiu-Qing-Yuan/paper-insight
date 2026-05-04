@@ -5,6 +5,7 @@ import * as echarts from 'echarts'
 import { usePapersStore } from '../stores/papers'
 import { scholarUrl } from '../utils'
 import { getChartColors } from '../composables/useTheme'
+import * as api from '../api'
 
 const store = usePapersStore()
 const route = useRoute()
@@ -18,10 +19,55 @@ let venueChart: echarts.ECharts | null = null
 
 const avatarColors = ['#2563eb','#3b82f6','#0ea5e9','#06b6d4','#14b8a6','#22c55e','#84cc16','#eab308','#f97316','#ef4444']
 
-const paper = computed(() => {
+const paperNotFound = ref(false)
+const paperLoading = ref(true)
+
+function findPaper() {
   const id = decodeURIComponent(route.params.id as string || '')
   return store.papers.find(p => p.id === id) || null
-})
+}
+
+const paper = computed(() => findPaper())
+
+// Ensure papers are loaded when accessing detail page directly
+async function ensurePapersLoaded() {
+  paperLoading.value = true
+  try {
+    // Ensure ACL papers are loaded
+    if (store.aclPapers.length === 0) {
+      await store.loadPapers()
+    }
+    if (findPaper()) return
+
+    // Check if the ID looks like an external conference paper
+    const id = decodeURIComponent(route.params.id as string || '')
+    const extMatch = id.match(/^(\d{4})\.(emnlp|neurips|icml)/i)
+    if (extMatch) {
+      const year = parseInt(extMatch[1])
+      const conf = extMatch[2].toUpperCase()
+      await store.switchConference(conf, year)
+      if (findPaper()) return
+    }
+
+    // Search across all external conferences without changing active view
+    const searchConfs: Array<[string, number[]]> = [['EMNLP', [2024, 2025]], ['NeurIPS', [2024]], ['ICML', [2024]]]
+    for (const [conf, years] of searchConfs) {
+      for (const year of years) {
+        const data = await api.fetchExternalPapers(conf, year)
+        const match = data.find(p => p.id === id)
+        if (match) {
+          store.switchConference(conf, year)
+          return
+        }
+      }
+    }
+
+    // Paper not found in any conference
+    paperNotFound.value = true
+  } finally {
+    paperLoading.value = false
+  }
+}
 
 const relatedPapers = computed(() => {
   if (!paper.value) return []
@@ -101,13 +147,15 @@ function renderVenueChart() {
   })
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await ensurePapersLoaded()
   watch(() => store.papers.length, () => {
     if (paper.value) nextTick(renderVenueChart)
   }, { immediate: true })
   watch(() => route.params.id, () => {
     activeTab.value = 'abstract'
     abstractLang.value = 'en'
+    paperNotFound.value = false
     nextTick(renderVenueChart)
   })
 })
@@ -219,6 +267,12 @@ onUnmounted(() => {
             <div v-if="relatedPapers.length === 0" style="color:rgba(255,255,255,0.3);font-size:13px;padding:10px 0">暂无相关论文</div>
           </div>
         </div>
+      </div>
+    </template>
+
+    <template v-else-if="paperLoading">
+      <div style="grid-column:1/-1;text-align:center;padding:80px 0">
+        <div class="chart-loading" style="font-size:16px">正在加载论文数据...</div>
       </div>
     </template>
 
