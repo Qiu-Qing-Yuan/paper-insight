@@ -21,6 +21,8 @@ if (!fs.existsSync(OUT_DIR)) {
 const EXTERNAL_CONFERENCES = [
   { conf: 'ICML', year: 2024 },
   { conf: 'ICML', year: 2025 },
+  { conf: 'ICLR', year: 2024 },
+  { conf: 'ICLR', year: 2025 },
   { conf: 'NeurIPS', year: 2024 },
   { conf: 'NeurIPS', year: 2025 },
   { conf: 'EMNLP', year: 2024 },
@@ -131,6 +133,14 @@ async function main() {
       entries: [
         { year: 2024, key: 'ICML-2024', paperCount: results['ICML-2024'] || 0, status: 'ready' },
         { year: 2025, key: 'ICML-2025', paperCount: results['ICML-2025'] || 0, status: 'ready' },
+      ]
+    },
+    {
+      id: 'ICLR', name: 'ICLR', years: [2024, 2025],
+      description: 'International Conference on Learning Representations',
+      entries: [
+        { year: 2024, key: 'ICLR-2024', paperCount: results['ICLR-2024'] || 0, status: 'ready' },
+        { year: 2025, key: 'ICLR-2025', paperCount: results['ICLR-2025'] || 0, status: 'ready' },
       ]
     },
     {

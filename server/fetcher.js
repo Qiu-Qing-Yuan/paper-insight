@@ -1,5 +1,5 @@
 // Multi-conference paper fetcher
-// Sources: OpenReview (ICML, NeurIPS), ACL Anthology (EMNLP), NeurIPS Proceedings
+// Sources: OpenReview (ICML, ICLR, NeurIPS), ACL Anthology (EMNLP), NeurIPS Proceedings
 
 const https = require('https');
 const http = require('http');
@@ -163,6 +163,65 @@ function parseAnthologyPage(html, id, year) {
   };
 }
 
+// ===== ICLR via OpenReview API v2 =====
+
+async function fetchICLR(year = 2024, onProgress) {
+  const papers = [];
+  const invitations = [
+    `ICLR.cc/${year}/Conference/-/Submission`,
+    `ICLR.cc/${year}/Conference/-/Poster`,
+  ];
+
+  for (const invitation of invitations) {
+    let offset = 0;
+    const limit = 100;
+    let totalCount = null;
+
+    while (true) {
+      const url = `https://api2.openreview.net/notes?invitation=${encodeURIComponent(invitation)}&limit=${limit}&offset=${offset}`;
+      if (onProgress) onProgress(papers.length, totalCount || 0, `ICLR ${year}: 正在获取 (offset=${offset})...`);
+
+      let data;
+      try {
+        const raw = await fetchUrl(url);
+        data = JSON.parse(raw);
+      } catch (e) {
+        if (onProgress) onProgress(papers.length, papers.length, `ICLR ${year}: 请求失败 - ${e.message}`);
+        break;
+      }
+
+      if (totalCount === null) totalCount = data.count || 0;
+      const notes = data.notes || [];
+      if (notes.length === 0) break;
+
+      for (const note of notes) {
+        const c = note.content || {};
+        if (papers.some(p => p.id === note.id)) continue;
+        papers.push({
+          id: note.id || '',
+          title: (c.title && c.title.value) || '',
+          authors: (c.authors && c.authors.value) || [],
+          venue: (c.venue && c.venue.value) || `ICLR ${year}`,
+          abstract_en: (c.abstract && c.abstract.value) || '',
+          abstract_zh: '',
+          pdf_url: (c.pdf && c.pdf.value) || '',
+          source: 'ICLR',
+          year,
+        });
+      }
+
+      offset += limit;
+      if (offset >= totalCount) break;
+      await sleep(500);
+    }
+
+    if (papers.length > 0) break;
+  }
+
+  if (onProgress) onProgress(papers.length, papers.length, `ICLR ${year}: 完成, 共 ${papers.length} 篇`);
+  return papers;
+}
+
 // ===== NeurIPS via OpenReview =====
 
 async function fetchNeurIPS(year = 2024, onProgress) {
@@ -305,6 +364,7 @@ function parseNeurIPSPage(html, hash, year) {
 
 const FETCHERS = {
   ICML: fetchICML,
+  ICLR: fetchICLR,
   EMNLP: fetchEMNLP,
   NeurIPS: fetchNeurIPS,
 };

@@ -41,7 +41,7 @@ async function ensurePapersLoaded() {
 
     // Check if the ID looks like an external conference paper
     const id = decodeURIComponent(route.params.id as string || '')
-    const extMatch = id.match(/^(\d{4})\.(emnlp|neurips|icml)/i)
+    const extMatch = id.match(/^(\d{4})\.(emnlp|neurips|icml|iclr)/i)
     if (extMatch) {
       const year = parseInt(extMatch[1])
       const conf = extMatch[2].toUpperCase()
@@ -50,7 +50,7 @@ async function ensurePapersLoaded() {
     }
 
     // Search across all external conferences without changing active view
-    const searchConfs: Array<[string, number[]]> = [['EMNLP', [2024, 2025]], ['NeurIPS', [2024]], ['ICML', [2024]]]
+    const searchConfs: Array<[string, number[]]> = [['EMNLP', [2024, 2025]], ['NeurIPS', [2024]], ['ICML', [2024]], ['ICLR', [2024, 2025]]]
     for (const [conf, years] of searchConfs) {
       for (const year of years) {
         const data = await api.fetchExternalPapers(conf, year)

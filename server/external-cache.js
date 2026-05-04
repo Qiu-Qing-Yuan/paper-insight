@@ -57,6 +57,7 @@ class ExternalCache {
   listConferences() {
     const conferences = [
       { id: 'ICML', name: 'ICML', years: [2024, 2025], description: 'International Conference on Machine Learning' },
+      { id: 'ICLR', name: 'ICLR', years: [2024, 2025], description: 'International Conference on Learning Representations' },
       { id: 'EMNLP', name: 'EMNLP', years: [2024, 2025], description: 'Empirical Methods in Natural Language Processing' },
       { id: 'NeurIPS', name: 'NeurIPS', years: [2024, 2025], description: 'Neural Information Processing Systems' },
     ];

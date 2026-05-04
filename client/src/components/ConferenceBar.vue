@@ -10,6 +10,7 @@ const openDropdown = ref<string | null>(null)
 const confColors: Record<string, string> = {
   ACL: '#22c55e',
   ICML: '#3b82f6',
+  ICLR: '#06b6d4',
   EMNLP: '#a855f7',
   NeurIPS: '#eab308',
 }
