@@ -165,7 +165,7 @@ body{font-family:'Noto Sans SC',-apple-system,BlinkMacSystemFont,'Segoe UI',sans
 
 /* User Menu Popup */
 .user-menu{position:absolute;bottom:48px;right:8px;background:var(--menu-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--menu-border);border-radius:12px;padding:6px;min-width:160px;box-shadow:var(--shadow-overlay);z-index:9999}
-.user-menu-external{position:fixed;bottom:80px;left:56px;width:220px;min-width:auto}
+.user-menu-external{position:fixed;bottom:52px;left:56px;width:220px;min-width:auto}
 .menu-header{display:flex;align-items:center;gap:10px;padding:10px 12px 8px}
 .menu-avatar{width:32px;height:32px;background:linear-gradient(135deg,#3b82f6,#2563eb);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
 .menu-user-info{flex:1;min-width:0}
