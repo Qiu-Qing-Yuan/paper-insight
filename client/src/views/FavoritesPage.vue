@@ -6,7 +6,8 @@ import { scholarUrl } from '../utils'
 const store = usePapersStore()
 const favorites = ref<any[]>([])
 
-onMounted(() => {
+onMounted(async () => {
+  if (store.papers.length === 0) await store.loadPapers()
   const ids = JSON.parse(localStorage.getItem('acl_favorites') || '[]')
   favorites.value = ids.map((id: string) => store.papers.find(p => p.id === id)).filter(Boolean)
 })
