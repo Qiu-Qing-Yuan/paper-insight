@@ -85,51 +85,42 @@ async function fetchEMNLP(year = 2024, onProgress) {
   // Pattern: https://aclanthology.org/volumes/2024.emnlp-main/
   const volumes = [
     `${year}.emnlp-main`,
-    `${year}.emnlp-long`,
-    `${year}.emnlp-short`,
-    `${year}.emnlp-findings`,
+    `${year}.findings-emnlp`,
   ];
 
   const papers = [];
-  let totalEstimated = 0;
 
   for (const vol of volumes) {
     const volUrl = `https://aclanthology.org/volumes/${vol}/`;
-    if (onProgress) onProgress(papers.length, totalEstimated, `EMNLP ${year}: 正在获取 ${vol}...`);
+    if (onProgress) onProgress(papers.length, 0, `EMNLP ${year}: 正在获取 ${vol}...`);
 
     let html;
     try {
       html = await fetchUrl(volUrl);
     } catch {
-      // Volume may not exist, skip silently
       continue;
     }
 
-    // Parse paper links from volume page
-    // Each paper has: <a class="align-middle" href="/2024.emnlp-main.1/">Title</a>
-    const paperLinks = [];
-    const linkRegex = /href="\/(\d{4}\.[a-z]+-[a-z]+-\d+)\/?"[^>]*>([^<]*)</g;
+    // Extract titles directly from volume page (much faster than fetching each paper)
+    const linkRegex = /href=(?:\/)?(\d{4}\.[a-z]+-[a-z]+\.\d+)\/>([\s\S]*?)<\/a>/g;
     let match;
     while ((match = linkRegex.exec(html)) !== null) {
-      paperLinks.push({ id: match[1], title: match[2].trim() });
-    }
-
-    totalEstimated += paperLinks.length;
-
-    // Fetch each paper's detail page (with rate limiting)
-    for (let i = 0; i < paperLinks.length; i++) {
-      const { id } = paperLinks[i];
-      if (onProgress) onProgress(papers.length, totalEstimated, `EMNLP ${year}: ${id} (${i + 1}/${paperLinks.length})`);
-
-      try {
-        const paperHtml = await fetchUrl(`https://aclanthology.org/${id}/`);
-        const paper = parseAnthologyPage(paperHtml, id, year);
-        if (paper) papers.push(paper);
-      } catch {
-        // Skip failed papers
+      const id = match[1];
+      if (id.endsWith('.0')) continue;
+      const title = match[2].replace(/<[^>]+>/g, '').trim();
+      if (title) {
+        papers.push({
+          id,
+          title,
+          authors: [],
+          venue: `EMNLP ${year}`,
+          abstract_en: '',
+          abstract_zh: '',
+          pdf_url: `https://aclanthology.org/${id}.pdf`,
+          source: 'EMNLP',
+          year,
+        });
       }
-
-      if (i % 5 === 4) await sleep(300); // rate limit every 5 requests
     }
   }
 
@@ -138,13 +129,13 @@ async function fetchEMNLP(year = 2024, onProgress) {
 }
 
 function parseAnthologyPage(html, id, year) {
-  // Extract title from <h2 id="title">...<a ...>Title</a></h2>
-  const titleMatch = html.match(/<h2[^>]*id="?title"?[^>]*>[\s\S]*?<a[^>]*>([\s\S]*?)<\/a>/);
+  // Extract title from <h2 id=title>...<a ...>Title</a></h2>
+  const titleMatch = html.match(/<h2[^>]*id=title[^>]*>[\s\S]*?<a[^>]*>([\s\S]*?)<\/a>/);
   if (!titleMatch) return null;
   const title = titleMatch[1].replace(/<[^>]+>/g, '').trim();
 
-  // Extract authors from <p class="lead">...</p>
-  const authorsMatch = html.match(/<p\s+class="?lead"?>([\s\S]*?)<\/p>/);
+  // Extract authors from <p class=lead>...</p>
+  const authorsMatch = html.match(/<p\s+class=lead>([\s\S]*?)<\/p>/);
   const authors = [];
   if (authorsMatch) {
     const authorRegex = />([^<]+)<\/a>/g;
