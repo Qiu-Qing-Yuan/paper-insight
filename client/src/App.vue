@@ -6,9 +6,7 @@ import ConferenceBar from './components/ConferenceBar.vue'
 
 const store = usePapersStore()
 const loading = computed(() => store.loading)
-const progress = computed(() => store.progress)
 const externalLoading = computed(() => store.externalLoading)
-const externalProgress = computed(() => store.externalProgress)
 
 onMounted(() => {
   store.loadPapers()
@@ -32,19 +30,12 @@ onMounted(() => {
   </div>
   <div v-if="loading" class="global-loading" style="display:flex">
     <div style="text-align:center">
-      <div class="loading" style="margin-bottom:16px">{{ progress.message || '正在加载数据...' }}</div>
-      <div class="progress-bar">
-        <div class="progress-fill" :style="{ width: progress.percent + '%' }"></div>
-      </div>
-      <div style="color:#888;font-size:12px;margin-top:8px">{{ progress.percent }}%</div>
+      <div class="loading" style="margin-bottom:16px">正在加载数据...</div>
     </div>
   </div>
   <Transition name="fade">
-    <div v-if="externalLoading && externalProgress.status === 'loading'" class="external-loading-toast">
-      <div class="loading-sm">{{ externalProgress.message }}</div>
-      <div class="progress-bar" style="height:4px;margin-top:8px">
-        <div class="progress-fill" :style="{ width: externalProgress.percent + '%' }"></div>
-      </div>
+    <div v-if="externalLoading" class="external-loading-toast">
+      <div class="loading-sm">正在加载会议数据...</div>
     </div>
   </Transition>
 </template>

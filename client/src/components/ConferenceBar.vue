@@ -53,7 +53,7 @@ const groups = computed<ConfGroup[]>(() => {
         key: e.key,
         year: e.year,
         count: e.paperCount,
-        status: store.externalUpdatingKey === e.key ? 'fetching' : e.status,
+        status: e.status,
       })),
     })
   }

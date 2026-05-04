@@ -1,4 +1,4 @@
-import type { Paper, Progress, Conference } from './types'
+import type { Paper, Conference } from './types'
 
 export interface PaginatedResult {
   items: Paper[]
@@ -95,17 +95,6 @@ export async function fetchKeywords(lang: string, sub?: string): Promise<[string
   return r.json()
 }
 
-export async function refreshCache(): Promise<{ status: string }> {
-  // 静态模式无需刷新
-  return { status: 'ok' }
-}
-
-export async function fetchProgress(): Promise<Progress> {
-  return { status: 'done', current: 100, total: 100, message: '', percent: 100 }
-}
-
-// ===== 外部会议 =====
-
 export async function fetchConferences(): Promise<Conference[]> {
   const r = await fetch('/data/conferences.json')
   if (r.ok) return r.json()
@@ -118,16 +107,4 @@ export async function fetchExternalPapers(conference: string, year: number = 202
     if (!r.ok) return []
     return r.json()
   } catch { return [] }
-}
-
-export async function fetchAllExternalPapers(): Promise<Paper[]> {
-  return []
-}
-
-export async function triggerExternalUpdate(conference: string, year: number = 2024): Promise<{ status: string }> {
-  return { status: 'ok' }
-}
-
-export async function fetchExternalProgress(conference: string, year: number = 2024): Promise<Progress> {
-  return { status: 'ready', current: 100, total: 100, message: '加载完成', percent: 100 }
 }
