@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { usePapersStore } from '../stores/papers'
 
@@ -11,6 +11,9 @@ const expanded = ref(false)
 const collapsing = ref(false)
 const userMenuOpen = ref(false)
 const isDark = ref(true)
+const isHovering = ref(false)
+let hoverTimer: ReturnType<typeof setTimeout> | null = null
+let leaveTimer: ReturnType<typeof setTimeout> | null = null
 
 onMounted(() => {
   const saved = localStorage.getItem('acl_theme')
@@ -18,6 +21,11 @@ onMounted(() => {
     isDark.value = saved === 'dark'
     document.documentElement.setAttribute('data-theme', saved)
   }
+})
+
+onUnmounted(() => {
+  if (hoverTimer) clearTimeout(hoverTimer)
+  if (leaveTimer) clearTimeout(leaveTimer)
 })
 
 const navItems = [
@@ -43,13 +51,39 @@ function navigateTo(path: string) {
 
 function toggleExpand() {
   if (expanded.value) {
-    collapsing.value = true
-    expanded.value = false
-    userMenuOpen.value = false
-    setTimeout(() => { collapsing.value = false }, 350)
+    collapseSidebar()
   } else {
-    expanded.value = true
+    expandSidebar()
   }
+}
+
+function expandSidebar() {
+  if (leaveTimer) { clearTimeout(leaveTimer); leaveTimer = null }
+  expanded.value = true
+}
+
+function collapseSidebar() {
+  collapsing.value = true
+  expanded.value = false
+  userMenuOpen.value = false
+  setTimeout(() => { collapsing.value = false }, 350)
+}
+
+function onSidebarEnter() {
+  if (window.innerWidth < 768) return
+  isHovering.value = true
+  if (leaveTimer) { clearTimeout(leaveTimer); leaveTimer = null }
+  hoverTimer = setTimeout(() => {
+    if (isHovering.value) expandSidebar()
+  }, 300)
+}
+
+function onSidebarLeave() {
+  isHovering.value = false
+  if (hoverTimer) { clearTimeout(hoverTimer); hoverTimer = null }
+  leaveTimer = setTimeout(() => {
+    if (!isHovering.value && expanded.value) collapseSidebar()
+  }, 400)
 }
 
 function toggleTheme() {
@@ -70,7 +104,7 @@ function isActive(path: string) {
 </script>
 
 <template>
-  <aside class="sidebar" :class="{ expanded, collapsing }" @mouseleave="userMenuOpen = false">
+  <aside class="sidebar" :class="{ expanded, collapsing }" @mouseenter="onSidebarEnter" @mouseleave="onSidebarLeave">
     <!-- Toggle button -->
     <div class="sidebar-toggle-zone" @click="toggleExpand">
       <div class="sidebar-brand">
@@ -79,9 +113,12 @@ function isActive(path: string) {
         </svg>
         <span class="sidebar-brand-text">Paper Insight</span>
       </div>
-      <div class="sidebar-toggle" :class="{ rotated: expanded }">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <div class="sidebar-toggle" :class="{ rotated: expanded }" :title="expanded ? '收起侧边栏' : '展开侧边栏'">
+        <svg v-if="!expanded" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+        <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
       </div>
     </div>
