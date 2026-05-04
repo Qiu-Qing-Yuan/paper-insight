@@ -53,19 +53,17 @@ function isActive(path: string) {
 
 <template>
   <aside class="sidebar" :class="{ expanded }" @mouseleave="userMenuOpen = false">
-    <!-- Top: Brand + Toggle -->
-    <div class="sidebar-header" @click="expanded = !expanded">
+    <!-- Top: Brand -->
+    <div class="sidebar-header">
       <div class="item-icon-wrap">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>
         </svg>
       </div>
       <span class="item-label sidebar-brand-text">Paper Insight</span>
-      <div class="sidebar-toggle">
-        <svg v-if="!expanded" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="9 18 15 12 9 6"/>
-        </svg>
-        <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <!-- Collapse button (top right, only when expanded) -->
+      <div class="sidebar-toggle" @click="expanded = false" v-if="expanded">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="15 18 9 12 15 6"/>
         </svg>
       </div>
@@ -130,6 +128,16 @@ function isActive(path: string) {
 
     <!-- Bottom -->
     <div class="sidebar-bottom">
+      <!-- Expand button (above theme toggle, only when collapsed) -->
+      <div class="sidebar-item" @click="expanded = true" v-if="!expanded">
+        <div class="item-icon-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </div>
+        <span class="item-label">展开</span>
+      </div>
+
       <div class="sidebar-item" @click="toggleTheme">
         <div class="item-icon-wrap">
           <svg v-if="isDark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
