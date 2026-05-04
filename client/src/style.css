@@ -145,13 +145,12 @@ body{font-family:'Noto Sans SC',-apple-system,BlinkMacSystemFont,'Segoe UI',sans
 .sidebar-brand-text{font-size:14px;font-weight:700;white-space:nowrap;opacity:0;transform:translateX(-6px);transition:opacity 0.18s ease,transform 0.25s cubic-bezier(0.22,1,0.36,1);background:linear-gradient(135deg,var(--accent-text),#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .sidebar.expanded .sidebar-brand-text{opacity:1;transform:translateX(0);transition-delay:0.08s}
 .sidebar.collapsing .sidebar-brand-text{transition-delay:0s}
-.sidebar-toggle{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);transition:all 0.25s cubic-bezier(0.22,1,0.36,1);flex-shrink:0;position:relative}
-.sidebar-toggle::before{content:'';position:absolute;inset:-4px;border-radius:12px;background:transparent;transition:background 0.2s}
+.sidebar-toggle{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);transition:all 0.25s cubic-bezier(0.22,1,0.36,1);flex-shrink:0;opacity:0;pointer-events:none}
+.sidebar-toggle-zone:hover .sidebar-toggle,.sidebar-toggle.locked{opacity:1;pointer-events:auto}
 .sidebar-toggle:hover{color:var(--accent-text);background:var(--accent-light)}
-.sidebar-toggle:hover::before{background:var(--accent-light);opacity:0.5}
-.sidebar-toggle:active{transform:scale(0.9)}
-.sidebar-toggle svg{transition:all 0.35s cubic-bezier(0.22,1,0.36,1);position:relative;z-index:1}
-.sidebar-toggle.rotated svg{transform:rotate(90deg)}
+.sidebar-toggle:active{transform:scale(0.85)}
+.sidebar-toggle.locked{color:var(--accent-text)}
+.sidebar-toggle svg{transition:all 0.25s cubic-bezier(0.22,1,0.36,1)}
 
 .sidebar-nav{flex:1;overflow-y:auto;overflow-x:hidden;padding:4px 0}
 .nav-group{padding:2px 0}

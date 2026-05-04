@@ -12,6 +12,7 @@ const collapsing = ref(false)
 const userMenuOpen = ref(false)
 const isDark = ref(true)
 const isHovering = ref(false)
+const locked = ref(false)
 let hoverTimer: ReturnType<typeof setTimeout> | null = null
 let leaveTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -50,9 +51,8 @@ function navigateTo(path: string) {
 }
 
 function toggleExpand() {
-  if (expanded.value) {
-    collapseSidebar()
-  } else {
+  locked.value = !locked.value
+  if (locked.value) {
     expandSidebar()
   }
 }
@@ -63,6 +63,7 @@ function expandSidebar() {
 }
 
 function collapseSidebar() {
+  if (locked.value) return
   collapsing.value = true
   expanded.value = false
   userMenuOpen.value = false
@@ -82,7 +83,7 @@ function onSidebarLeave() {
   isHovering.value = false
   if (hoverTimer) { clearTimeout(hoverTimer); hoverTimer = null }
   leaveTimer = setTimeout(() => {
-    if (!isHovering.value && expanded.value) collapseSidebar()
+    if (!isHovering.value) collapseSidebar()
   }, 400)
 }
 
@@ -113,12 +114,12 @@ function isActive(path: string) {
         </svg>
         <span class="sidebar-brand-text">Paper Insight</span>
       </div>
-      <div class="sidebar-toggle" :class="{ rotated: expanded }" :title="expanded ? '收起侧边栏' : '展开侧边栏'">
-        <svg v-if="!expanded" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      <div class="sidebar-toggle" :class="{ locked }" @click.stop="toggleExpand" :title="locked ? '解锁侧边栏' : '锁定展开'">
+        <svg v-if="!locked" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/>
         </svg>
-        <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/>
         </svg>
       </div>
     </div>
