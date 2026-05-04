@@ -8,6 +8,7 @@ const path = require('path');
 const chokidar = require('chokidar');
 const DataCache = require('./cache');
 const ExternalCache = require('./external-cache');
+const { queryPapers, getFilterOptions } = require('./paginated');
 
 const PORT = 8000;
 const BASE = path.resolve(__dirname, '..');
@@ -35,11 +36,33 @@ app.use((req, res, next) => {
 
 // ===== API 路由 =====
 
-// GET /api/papers - 获取所有论文
+// GET /api/papers - 获取论文（支持分页查询）
 app.get('/api/papers', (req, res) => {
+  // 有分页参数时返回分页结果
+  if (req.query.page || req.query.limit || req.query.category || req.query.subcategory || req.query.venue || req.query.search || req.query.sort) {
+    const page = parseInt(req.query.page) || 1;
+    const limit = Math.min(parseInt(req.query.limit) || 20, 100);
+    const result = queryPapers({
+      page, limit,
+      category: req.query.category || '',
+      subcategory: req.query.subcategory || '',
+      venue: req.query.venue || '',
+      search: req.query.search || '',
+      sort: req.query.sort || '',
+    });
+    res.setHeader('Cache-Control', 'public, max-age=5');
+    return res.json(result);
+  }
+  // 无参数时返回全部（兼容旧接口）
   const papers = cache.getPapers();
   res.setHeader('Cache-Control', 'public, max-age=5');
   res.json(papers);
+});
+
+// GET /api/filters - 获取筛选选项
+app.get('/api/filters', (req, res) => {
+  const options = getFilterOptions();
+  res.json({ ...options, total: cache.getPapers().length });
 });
 
 // GET /api/paper?id=xxx - 获取单篇论文

@@ -3,9 +3,10 @@
   "buildCommand": "node scripts/export-data.js && cd client && npm run build",
   "outputDirectory": "client/dist",
   "installCommand": "npm install && cd client && npm install",
-  "rewrites": [
-    { "source": "/api/papers", "destination": "/data/papers.json" }
-  ],
+  "functions": {
+    "api/papers.js": { "includeFiles": "client/public/data/papers.json" },
+    "api/filters.js": { "includeFiles": "client/public/data/papers.json" }
+  },
   "headers": [
     {
       "source": "/data/(.*)",

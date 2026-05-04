@@ -1,40 +1,32 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref } from 'vue'
+import { usePaginatedPapers } from '../composables/usePaginatedPapers'
 import { usePapersStore } from '../stores/papers'
-import { usePaperFilter } from '../composables/usePaperFilter'
-import { usePagination } from '../composables/usePagination'
 import { scholarUrl } from '../utils'
 
 const store = usePapersStore()
-const route = useRoute()
-const { filter, sortedCategories, sortedSubcategories, filtered, resetFilter } = usePaperFilter()
+const {
+  category, subcategory, venue, search, sortBy,
+  page, total, totalPages, loading, papers,
+  filterOptions, visiblePages,
+  applyFilter, applySort, resetFilter, goToPage, onSearchInput,
+} = usePaginatedPapers()
 
-const sortBy = ref('default')
-const pageSize = 20
+const jumpPage = ref('')
 
-const sorted = computed(() => {
-  const arr = [...filtered.value]
-  if (sortBy.value === 'venue') arr.sort((a, b) => (a.venue || '').localeCompare(b.venue || ''))
-  else if (sortBy.value === 'id') arr.sort((a, b) => (a.id || '').localeCompare(b.id || ''))
-  else if (sortBy.value === 'title') arr.sort((a, b) => (a.title || '').localeCompare(b.title || ''))
-  return arr
-})
-
-const { page, jumpPage, totalPages, pagePapers, visiblePages, goToJumpPage, scrollTop, resetPage } = usePagination(sorted, pageSize)
-
-function applyFilter() { resetPage() }
-function applySort() { resetPage() }
-function handleReset() {
-  resetFilter()
-  sortBy.value = 'default'
-  resetPage()
+function doJumpPage() {
+  const p = parseInt(jumpPage.value)
+  if (p >= 1 && p <= totalPages.value) {
+    goToPage(p)
+    jumpPage.value = ''
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 }
 
-onMounted(() => {
-  if (route.query.sub) filter.subcategory = route.query.sub as string
-  if (route.query.search) filter.search = route.query.search as string
-})
+function scrollTopAndGo(p: number) {
+  goToPage(p)
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
 </script>
 
 <template>
@@ -43,28 +35,27 @@ onMounted(() => {
       <div class="section-header">
         <div class="card-title">筛选条件</div>
         <div class="header-actions">
-          <button class="btn btn-secondary btn-sm" @click="handleReset">重置</button>
-          <button class="btn btn-primary btn-sm" @click="store.loadPapers()">刷新数据</button>
+          <button class="btn btn-secondary btn-sm" @click="resetFilter">重置</button>
         </div>
       </div>
       <div class="filters">
         <div class="filter-group">
           <label>一级方向</label>
-          <select v-model="filter.category" @change="applyFilter">
+          <select v-model="category" @change="applyFilter">
             <option value="">全部方向</option>
-            <option v-for="c in sortedCategories" :key="c" :value="c">{{ c }} ({{ store.categories[c] }})</option>
+            <option v-for="(count, c) in (filterOptions?.categories || {})" :key="c" :value="c">{{ c }} ({{ count }})</option>
           </select>
         </div>
         <div class="filter-group">
           <label>细分方向</label>
-          <select v-model="filter.subcategory" @change="applyFilter">
+          <select v-model="subcategory" @change="applyFilter">
             <option value="">全部细分</option>
-            <option v-for="s in sortedSubcategories" :key="s" :value="s">{{ s }} ({{ store.subcategories[s] }})</option>
+            <option v-for="(count, s) in (filterOptions?.subcategories || {})" :key="s" :value="s">{{ s }} ({{ count }})</option>
           </select>
         </div>
         <div class="filter-group">
           <label>会议类别</label>
-          <select v-model="filter.venue" @change="applyFilter">
+          <select v-model="venue" @change="applyFilter">
             <option value="">全部类别</option>
             <option value="主会">主会</option>
             <option value="Findings">Findings</option>
@@ -73,7 +64,7 @@ onMounted(() => {
         </div>
         <div class="filter-group">
           <label>关键词搜索</label>
-          <input v-model="filter.search" @input="applyFilter" placeholder="搜索标题、摘要...">
+          <input v-model="search" @input="onSearchInput" placeholder="搜索标题、摘要...">
         </div>
       </div>
       <div class="filters" style="margin-bottom:0">
@@ -89,17 +80,17 @@ onMounted(() => {
       </div>
     </div>
 
-    <div class="result-info">共 {{ sorted.length }} 篇，第 {{ page }} / {{ totalPages }} 页</div>
+    <div class="result-info">共 {{ total }} 篇，第 {{ page }} / {{ totalPages }} 页</div>
 
-    <div v-if="store.loading">
+    <div v-if="loading">
       <div v-for="i in 5" :key="i" class="paper-item" style="height:80px">
         <div class="stat-skeleton" style="height:60px;width:100%"></div>
       </div>
     </div>
     <div v-else>
-      <router-link v-for="(paper, idx) in pagePapers" :key="paper.id" :to="'/paper/' + encodeURIComponent(paper.id)" class="paper-item" style="text-decoration:none;display:block">
+      <router-link v-for="(paper, idx) in papers" :key="paper.id" :to="'/paper/' + encodeURIComponent(paper.id)" class="paper-item" style="text-decoration:none;display:block">
         <div style="display:flex;gap:12px;align-items:flex-start">
-          <span style="color:rgba(255,255,255,0.3);font-size:12px;min-width:40px;padding-top:4px">#{{ (page-1)*pageSize + idx + 1 }}</span>
+          <span style="color:rgba(255,255,255,0.3);font-size:12px;min-width:40px;padding-top:4px">#{{ (page-1)*20 + idx + 1 }}</span>
           <div style="flex:1">
             <div class="paper-title">{{ paper.title }}</div>
             <div class="paper-meta">
@@ -111,19 +102,19 @@ onMounted(() => {
           </div>
         </div>
       </router-link>
-      <div v-if="pagePapers.length===0 && !store.loading" class="no-data">没有匹配的论文</div>
+      <div v-if="papers.length===0 && !loading" class="no-data">没有匹配的论文</div>
     </div>
 
     <div v-if="totalPages > 1" style="display:flex;align-items:center;justify-content:center;gap:16px;margin-top:24px;flex-wrap:wrap">
       <div class="pagination" style="margin:0">
-        <button class="page-btn" :class="{disabled:page<=1}" @click="page--;scrollTop()">‹</button>
-        <button v-for="p in visiblePages" :key="p" class="page-btn" :class="{active:p===page}" @click="page=p;scrollTop()">{{ p }}</button>
-        <button class="page-btn" :class="{disabled:page>=totalPages}" @click="page++;scrollTop()">›</button>
+        <button class="page-btn" :class="{disabled:page<=1}" @click="scrollTopAndGo(page-1)">‹</button>
+        <button v-for="p in visiblePages" :key="p" class="page-btn" :class="{active:p===page}" @click="scrollTopAndGo(p)">{{ p }}</button>
+        <button class="page-btn" :class="{disabled:page>=totalPages}" @click="scrollTopAndGo(page+1)">›</button>
       </div>
       <div style="display:flex;align-items:center;gap:8px">
-        <span style="color:rgba(255,255,255,0.5);font-size:13px">跳转到</span>
-        <input v-model="jumpPage" @keyup.enter="goToJumpPage" placeholder="页码" style="width:60px;padding:6px 10px;border:1px solid rgba(255,255,255,0.12);border-radius:6px;background:rgba(255,255,255,0.06);color:#fff;font-size:13px;text-align:center">
-        <button class="btn btn-secondary" @click="goToJumpPage" style="padding:6px 12px;font-size:13px">确定</button>
+        <span style="color:var(--text-muted);font-size:13px">跳转到</span>
+        <input v-model="jumpPage" @keyup.enter="doJumpPage" placeholder="页码" style="width:60px;padding:6px 10px;border:1px solid var(--border-input);border-radius:6px;background:var(--bg-input);color:var(--text-primary);font-size:13px;text-align:center">
+        <button class="btn btn-secondary" @click="doJumpPage" style="padding:6px 12px;font-size:13px">确定</button>
       </div>
     </div>
   </div>

@@ -3,12 +3,59 @@ import type { Paper, Progress, Conference } from './types'
 // Production builds (Vercel) use static JSON; dev uses Express API
 const useStatic = import.meta.env.PROD
 
+export interface PaginatedResult {
+  items: Paper[]
+  total: number
+  page: number
+  totalPages: number
+  limit: number
+}
+
+export interface FilterOptions {
+  categories: Record<string, number>
+  subcategories: Record<string, number>
+  catSubMap: Record<string, Record<string, number>>
+  total: number
+}
+
+export interface QueryParams {
+  page?: number
+  limit?: number
+  category?: string
+  subcategory?: string
+  venue?: string
+  search?: string
+  sort?: string
+}
+
 export async function fetchPapers(): Promise<Paper[]> {
   if (useStatic) {
     const r = await fetch('/data/papers.json')
     return r.json()
   }
   const r = await fetch('/api/papers')
+  if (!r.ok) throw new Error('HTTP ' + r.status)
+  return r.json()
+}
+
+export async function queryPapers(params: QueryParams): Promise<PaginatedResult> {
+  const qs = new URLSearchParams()
+  if (params.page) qs.set('page', String(params.page))
+  if (params.limit) qs.set('limit', String(params.limit))
+  if (params.category) qs.set('category', params.category)
+  if (params.subcategory) qs.set('subcategory', params.subcategory)
+  if (params.venue) qs.set('venue', params.venue)
+  if (params.search) qs.set('search', params.search)
+  if (params.sort) qs.set('sort', params.sort)
+
+  const url = `/api/papers?${qs.toString()}`
+  const r = await fetch(url)
+  if (!r.ok) throw new Error('HTTP ' + r.status)
+  return r.json()
+}
+
+export async function fetchFilterOptions(): Promise<FilterOptions> {
+  const r = await fetch('/api/filters')
   if (!r.ok) throw new Error('HTTP ' + r.status)
   return r.json()
 }
