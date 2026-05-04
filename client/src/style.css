@@ -133,35 +133,41 @@ body{font-family:'Noto Sans SC',-apple-system,BlinkMacSystemFont,'Segoe UI',sans
 /* App Layout - Sidebar + Main */
 .app-layout{display:flex;min-height:100vh}
 .app-main{flex:1;min-width:0;overflow-y:auto;margin-left:56px;transition:margin-left 0.3s cubic-bezier(0.22,1,0.36,1)}
+.sidebar.expanded~.app-main{margin-left:220px}
 
 /* Sidebar */
 .sidebar{width:56px;background:var(--sidebar-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;transition:width 0.3s cubic-bezier(0.22,1,0.36,1);overflow:hidden;border-right:1px solid var(--sidebar-border)}
-.sidebar:hover{width:240px}
-.sidebar:hover~.app-main{margin-left:240px}
+.sidebar.expanded{width:220px}
 
-.sidebar-brand{display:flex;align-items:center;gap:10px;padding:16px 0 8px;justify-content:center;height:52px;flex-shrink:0}
-.sidebar:hover .sidebar-brand{justify-content:flex-start;padding-left:16px}
+.sidebar-top{height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);flex-shrink:0;transition:color 0.15s,background 0.15s}
+.sidebar-top:hover{color:var(--text-secondary);background:var(--sidebar-hover)}
+
+.sidebar-brand{display:flex;align-items:center;gap:10px;padding:0 16px;height:48px;flex-shrink:0;cursor:pointer}
 .sidebar-brand svg{flex-shrink:0;color:var(--text-secondary)}
-.sidebar-brand-text{font-size:14px;font-weight:700;white-space:nowrap;opacity:0;width:0;overflow:hidden;transition:opacity 0.2s ease 0.05s;letter-spacing:-0.3px}
-.sidebar:hover .sidebar-brand-text{opacity:1;width:auto}
+.sidebar-brand-text{font-size:14px;font-weight:700;white-space:nowrap;opacity:0;width:0;overflow:hidden;transition:opacity 0.2s ease 0.05s;letter-spacing:-0.3px;background:linear-gradient(135deg,var(--accent-text),#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sidebar.expanded .sidebar-brand-text{opacity:1;width:auto}
 
 .sidebar-nav{flex:1;overflow-y:auto;overflow-x:hidden;padding:4px 0}
 .nav-group{padding:2px 0}
 .nav-divider{height:1px;background:var(--sidebar-border);margin:4px 12px}
 
 .sidebar-item{display:flex;align-items:center;gap:0;padding:0;margin:2px 8px;height:40px;border-radius:10px;cursor:pointer;transition:background 0.15s,color 0.15s;color:var(--sidebar-item-color);white-space:nowrap;text-decoration:none;overflow:hidden}
-.sidebar:hover .sidebar-item{gap:10px}
+.sidebar.expanded .sidebar-item{gap:10px}
 .sidebar-item:hover{background:var(--sidebar-hover);color:var(--sidebar-item-hover)}
 .sidebar-item.active{color:var(--sidebar-item-active);background:var(--accent-light)}
 
 .item-icon-wrap{width:40px;height:100%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .item-label{font-size:13px;font-weight:500;opacity:0;width:0;overflow:hidden;transition:opacity 0.2s ease 0.05s}
-.sidebar:hover .item-label{opacity:1;width:auto}
+.sidebar.expanded .item-label{opacity:1;width:auto}
 
 .sidebar-bottom{padding:6px 0;border-top:1px solid var(--sidebar-border)}
 
 .sidebar-user{cursor:pointer}
 .user-avatar{width:26px;height:26px;background:linear-gradient(135deg,#3b82f6,#2563eb);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+
+.sidebar-collapse-btn{display:flex;align-items:center;gap:8px;padding:0 16px;height:40px;margin:2px 8px;border-radius:10px;cursor:pointer;color:var(--text-muted);font-size:13px;font-weight:500;transition:color 0.15s,background 0.15s}
+.sidebar-collapse-btn:hover{color:var(--text-secondary);background:var(--sidebar-hover)}
+.sidebar-collapse-btn svg{flex-shrink:0}
 
 /* User Menu Popup */
 .user-menu{position:absolute;bottom:60px;left:8px;background:var(--menu-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--menu-border);border-radius:12px;padding:6px;min-width:160px;box-shadow:var(--shadow-overlay);z-index:200}
@@ -387,8 +393,9 @@ a.home-card{display:block;text-decoration:none;color:inherit}
 @media(max-width:1024px){.stats-grid{grid-template-columns:repeat(3,1fr)}.chart-grid{grid-template-columns:1fr}}
 @media(max-width:768px){
   .sidebar{width:100%;height:56px;flex-direction:row;bottom:0;top:auto;border-right:none;border-top:1px solid var(--sidebar-border);position:fixed}
-  .sidebar:hover{width:100%}
-  .sidebar:hover~.app-main{margin-left:0}
+  .sidebar.expanded{width:100%}
+  .sidebar.expanded~.app-main{margin-left:0}
+  .sidebar-top,.sidebar-collapse-btn{display:none}
   .sidebar-brand{display:none}
   .sidebar-nav{flex:1;flex-direction:row;display:flex;overflow-x:auto;padding:0}
   .nav-group{display:flex;flex-direction:row;padding:0}
