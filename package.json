@@ -1,0 +1,18 @@
+{
+  "name": "paper-insight",
+  "version": "2.0.0",
+  "description": "Paper Insight - AI & CS 论文分析平台",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node server/index.js",
+    "dev:client": "cd client && npm run dev",
+    "build": "cd client && npm run build",
+    "install:all": "npm install && cd client && npm install"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "compression": "^1.7.4",
+    "chokidar": "^4.0.0"
+  }
+}

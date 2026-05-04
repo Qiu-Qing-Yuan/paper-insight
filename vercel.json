@@ -1,0 +1,16 @@
+{
+  "buildCommand": "node scripts/export-data.js && cd client && npm run build",
+  "outputDirectory": "client/dist",
+  "installCommand": "npm install && cd client && npm install",
+  "rewrites": [
+    { "source": "/api/papers", "destination": "/data/papers.json" }
+  ],
+  "headers": [
+    {
+      "source": "/data/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=3600" }
+      ]
+    }
+  ]
+}
