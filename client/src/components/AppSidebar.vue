@@ -74,7 +74,7 @@ function isActive(path: string) {
       </div>
       <span class="item-label sidebar-brand-text">Paper Insight</span>
       <!-- Collapse button (top right, only when expanded) -->
-      <div class="sidebar-toggle" @click="expanded = false" v-if="expanded">
+      <div class="sidebar-toggle" @click="expanded = false" v-if="expanded" title="收起侧边栏">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="15 18 9 12 15 6"/>
         </svg>
@@ -90,6 +90,7 @@ function isActive(path: string) {
           :to="item.path"
           class="sidebar-item"
           :class="{ active: isActive(item.path) }"
+          :title="item.label"
         >
           <div class="item-icon-wrap">
             <svg v-if="item.icon === 'home'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -118,6 +119,7 @@ function isActive(path: string) {
           :to="item.path"
           class="sidebar-item"
           :class="{ active: isActive(item.path) }"
+          :title="item.label"
         >
           <div class="item-icon-wrap">
             <svg v-if="item.icon === 'user'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -141,7 +143,7 @@ function isActive(path: string) {
     <!-- Bottom -->
     <div class="sidebar-bottom">
       <!-- Expand button (above theme toggle, only when collapsed) -->
-      <div class="sidebar-item" @click="expanded = true" v-if="!expanded">
+      <div class="sidebar-item" @click="expanded = true" v-if="!expanded" title="展开侧边栏">
         <div class="item-icon-wrap">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="9 18 15 12 9 6"/>
@@ -150,7 +152,7 @@ function isActive(path: string) {
         <span class="item-label">展开</span>
       </div>
 
-      <div class="sidebar-item" @click="toggleTheme">
+      <div class="sidebar-item" @click="toggleTheme" :title="isDark ? '切换到日间模式' : '切换到夜间模式'">
         <div class="item-icon-wrap">
           <svg v-if="isDark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
@@ -159,10 +161,10 @@ function isActive(path: string) {
             <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
           </svg>
         </div>
-        <span class="item-label">{{ isDark ? '日间' : '夜间' }}</span>
+        <span class="item-label">{{ isDark ? '日间模式' : '夜间模式' }}</span>
       </div>
 
-      <div class="sidebar-item sidebar-user" @click="userMenuOpen = !userMenuOpen">
+      <div class="sidebar-item sidebar-user" @click="userMenuOpen = !userMenuOpen" title="用户菜单">
         <div class="item-icon-wrap"><div class="user-avatar">U</div></div>
         <span class="item-label">用户</span>
       </div>
