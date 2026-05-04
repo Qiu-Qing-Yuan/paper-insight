@@ -175,7 +175,7 @@ body{font-family:'Noto Sans SC',-apple-system,BlinkMacSystemFont,'Segoe UI',sans
 .menu-item svg{flex-shrink:0}
 .menu-divider{height:1px;background:var(--menu-border);margin:4px 0}
 
-.sidebar.expanded .user-menu{left:228px}
+.user-menu.menu-expanded{left:228px}
 .menu-pop-enter-active{transition:all 0.2s cubic-bezier(0.16,1,0.3,1)}
 .menu-pop-leave-active{transition:all 0.15s cubic-bezier(0.4,0,1,1)}
 .menu-pop-enter-from{opacity:0;transform:translateY(8px) scale(0.95)}

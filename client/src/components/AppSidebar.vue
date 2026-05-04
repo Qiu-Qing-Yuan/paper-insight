@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { usePapersStore } from '../stores/papers'
 
@@ -17,7 +17,19 @@ onMounted(() => {
     isDark.value = saved === 'dark'
     document.documentElement.setAttribute('data-theme', saved)
   }
+  document.addEventListener('click', onDocClick)
 })
+
+onUnmounted(() => {
+  document.removeEventListener('click', onDocClick)
+})
+
+function onDocClick(e: MouseEvent) {
+  const target = e.target as HTMLElement
+  if (!target.closest('.sidebar-user') && !target.closest('.user-menu')) {
+    userMenuOpen.value = false
+  }
+}
 
 const navItems = [
   { icon: 'home', label: '首页', path: '/' },
@@ -52,7 +64,7 @@ function isActive(path: string) {
 </script>
 
 <template>
-  <aside class="sidebar" :class="{ expanded }" @mouseleave="userMenuOpen = false">
+  <aside class="sidebar" :class="{ expanded }">
     <!-- Top: Brand -->
     <div class="sidebar-header">
       <div class="item-icon-wrap">
@@ -157,14 +169,16 @@ function isActive(path: string) {
     </div>
 
     <!-- User Menu -->
-    <Transition name="menu-pop">
-      <div v-if="userMenuOpen" class="user-menu">
-        <div class="menu-item" @click="navigateTo('/user')">个人中心</div>
-        <div class="menu-item" @click="navigateTo('/favorites')">我的收藏</div>
-        <div class="menu-item" @click="navigateTo('/history')">浏览历史</div>
-        <div class="menu-divider"></div>
-        <div class="menu-item" @click="store.loadPapers(); userMenuOpen = false">刷新数据</div>
-      </div>
-    </Transition>
+    <Teleport to="body">
+      <Transition name="menu-pop">
+        <div v-if="userMenuOpen" class="user-menu" :class="{ 'menu-expanded': expanded }">
+          <div class="menu-item" @click="navigateTo('/user')">个人中心</div>
+          <div class="menu-item" @click="navigateTo('/favorites')">我的收藏</div>
+          <div class="menu-item" @click="navigateTo('/history')">浏览历史</div>
+          <div class="menu-divider"></div>
+          <div class="menu-item" @click="store.loadPapers(); userMenuOpen = false">刷新数据</div>
+        </div>
+      </Transition>
+    </Teleport>
   </aside>
 </template>
