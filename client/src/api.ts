@@ -109,12 +109,16 @@ export async function fetchPapers(): Promise<Paper[]> {
   return loadAllPapers()
 }
 
-export async function fetchKeywords(lang: string, sub?: string): Promise<[string, number][]> {
+export async function fetchKeywords(lang: string, sub?: string, sourceData?: Paper[]): Promise<[string, number][]> {
   if (sub) {
     // Client-side extraction for subcategory filtering
-    const papers = await loadAllPapers()
+    const papers = sourceData || await loadAllPapers()
     const filtered = papers.filter(p => p.subcategory === sub)
     return extractNounKeywords(filtered, lang as 'en' | 'zh')
+  }
+  if (sourceData) {
+    // Client-side extraction for current conference (non-ACL or filtered view)
+    return extractNounKeywords(sourceData, lang as 'en' | 'zh')
   }
   const r = await fetch(`/data/keywords-${lang}.json`)
   return r.json()

@@ -93,7 +93,7 @@ async function renderWordcloud() {
   el.innerHTML = '<div class="chart-loading">正在加载词云...</div>'
   try {
     const sub = currentCat.value !== 'all' ? currentCat.value : undefined
-    const kw = await fetchKeywords(store.lang, sub)
+    const kw = await fetchKeywords(store.lang, sub, store.papers)
     if (!kw || kw.length === 0) { el.innerHTML = '<div class="chart-loading">暂无数据</div>'; return }
     if (wcChart) { wcChart.dispose(); wcChart = null }
     el.innerHTML = ''
@@ -130,7 +130,7 @@ async function renderKeywordsBar() {
   el.innerHTML = '<div class="chart-loading">正在加载...</div>'
   try {
     const sub = currentCat.value !== 'all' ? currentCat.value : undefined
-    const kw = await fetchKeywords(store.lang, sub)
+    const kw = await fetchKeywords(store.lang, sub, store.papers)
     if (!kw || kw.length === 0) { el.innerHTML = '<div class="chart-loading">暂无数据</div>'; return }
     const top = kw.slice(0, 30)
     if (barChart) { barChart.dispose(); barChart = null }
@@ -165,7 +165,7 @@ async function renderKeywordsCount() {
   const subs = Object.keys(store.subcategories).sort((a, b) => store.subcategories[b] - store.subcategories[a]).slice(0, 20)
   if (subs.length === 0) { el.innerHTML = '<div class="chart-loading">暂无数据</div>'; return }
   try {
-    const results = await Promise.all(subs.map(sub => fetchKeywords(store.lang, sub).catch(() => [])))
+    const results = await Promise.all(subs.map(sub => fetchKeywords(store.lang, sub, store.papers).catch(() => [])))
     const data = subs.map((sub, i) => ({ name: store.getSubName(sub), value: results[i] ? results[i].length : 0 }))
     if (countChart) { countChart.dispose(); countChart = null }
     el.innerHTML = ''

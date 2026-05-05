@@ -10,7 +10,7 @@ interface ScheduleEntry {
   year: number
   color: string
   website: string
-  dates: { label: string; date: string; status: 'past' | 'upcoming' | 'open' }[]
+  dates: { label: string; date: string }[]
   location: string
 }
 
@@ -20,10 +20,10 @@ const schedules: ScheduleEntry[] = [
     color: '#22c55e', website: 'https://2026.aclweb.org/',
     location: '待定',
     dates: [
-      { label: 'Abstract 截稿', date: '2026-01-15', status: 'upcoming' },
-      { label: '全文截稿', date: '2026-01-22', status: 'upcoming' },
-      { label: '录用通知', date: '2026-05-01', status: 'upcoming' },
-      { label: '会议日期', date: '2026-07-12', status: 'upcoming' },
+      { label: 'Abstract 截稿', date: '2026-01-15' },
+      { label: '全文截稿', date: '2026-01-22' },
+      { label: '录用通知', date: '2026-05-01' },
+      { label: '会议日期', date: '2026-07-12' },
     ]
   },
   {
@@ -31,10 +31,10 @@ const schedules: ScheduleEntry[] = [
     color: '#22c55e', website: 'https://2025.aclweb.org/',
     location: 'Vienna, Austria',
     dates: [
-      { label: 'Abstract 截稿', date: '2025-01-15', status: 'past' },
-      { label: '全文截稿', date: '2025-01-22', status: 'past' },
-      { label: '录用通知', date: '2025-05-01', status: 'past' },
-      { label: '会议日期', date: '2025-07-27', status: 'past' },
+      { label: 'Abstract 截稿', date: '2025-01-15' },
+      { label: '全文截稿', date: '2025-01-22' },
+      { label: '录用通知', date: '2025-05-01' },
+      { label: '会议日期', date: '2025-07-27' },
     ]
   },
   {
@@ -42,10 +42,10 @@ const schedules: ScheduleEntry[] = [
     color: '#a855f7', website: 'https://2026.emnlp.org/',
     location: '待定',
     dates: [
-      { label: 'Abstract 截稿', date: '2026-06-15', status: 'upcoming' },
-      { label: '全文截稿', date: '2026-06-22', status: 'upcoming' },
-      { label: '录用通知', date: '2026-09-20', status: 'upcoming' },
-      { label: '会议日期', date: '2026-11-08', status: 'upcoming' },
+      { label: 'Abstract 截稿', date: '2026-06-15' },
+      { label: '全文截稿', date: '2026-06-22' },
+      { label: '录用通知', date: '2026-09-20' },
+      { label: '会议日期', date: '2026-11-08' },
     ]
   },
   {
@@ -53,10 +53,10 @@ const schedules: ScheduleEntry[] = [
     color: '#a855f7', website: 'https://2025.emnlp.org/',
     location: 'Suzhou, China',
     dates: [
-      { label: 'Abstract 截稿', date: '2025-06-15', status: 'past' },
-      { label: '全文截稿', date: '2025-06-22', status: 'past' },
-      { label: '录用通知', date: '2025-09-20', status: 'upcoming' },
-      { label: '会议日期', date: '2025-11-08', status: 'upcoming' },
+      { label: 'Abstract 截稿', date: '2025-06-15' },
+      { label: '全文截稿', date: '2025-06-22' },
+      { label: '录用通知', date: '2025-09-20' },
+      { label: '会议日期', date: '2025-11-08' },
     ]
   },
   {
@@ -64,9 +64,9 @@ const schedules: ScheduleEntry[] = [
     color: '#3b82f6', website: 'https://icml.cc/Conferences/2026',
     location: '待定',
     dates: [
-      { label: '全文截稿', date: '2026-01-31', status: 'upcoming' },
-      { label: '录用通知', date: '2026-05-01', status: 'upcoming' },
-      { label: '会议日期', date: '2026-07-13', status: 'upcoming' },
+      { label: '全文截稿', date: '2026-01-31' },
+      { label: '录用通知', date: '2026-05-01' },
+      { label: '会议日期', date: '2026-07-13' },
     ]
   },
   {
@@ -74,19 +74,19 @@ const schedules: ScheduleEntry[] = [
     color: '#3b82f6', website: 'https://icml.cc/Conferences/2025',
     location: 'Vancouver, Canada',
     dates: [
-      { label: '全文截稿', date: '2025-01-31', status: 'past' },
-      { label: '录用通知', date: '2025-05-01', status: 'past' },
-      { label: '会议日期', date: '2025-07-13', status: 'upcoming' },
+      { label: '全文截稿', date: '2025-01-31' },
+      { label: '录用通知', date: '2025-05-01' },
+      { label: '会议日期', date: '2025-07-13' },
     ]
   },
   {
     conf: 'ICLR', fullName: 'International Conference on Learning Representations', year: 2026,
     color: '#06b6d4', website: 'https://iclr.cc/Conferences/2026',
-    location: '待定',
+    location: 'Singapore',
     dates: [
-      { label: '全文截稿', date: '2025-10-01', status: 'upcoming' },
-      { label: '录用通知', date: '2026-01-22', status: 'upcoming' },
-      { label: '会议日期', date: '2026-04-28', status: 'upcoming' },
+      { label: '全文截稿', date: '2025-10-01' },
+      { label: '录用通知', date: '2026-01-22' },
+      { label: '会议日期', date: '2026-04-28' },
     ]
   },
   {
@@ -94,9 +94,9 @@ const schedules: ScheduleEntry[] = [
     color: '#06b6d4', website: 'https://iclr.cc/Conferences/2025',
     location: 'Singapore',
     dates: [
-      { label: '全文截稿', date: '2024-10-01', status: 'past' },
-      { label: '录用通知', date: '2025-01-22', status: 'past' },
-      { label: '会议日期', date: '2025-04-28', status: 'past' },
+      { label: '全文截稿', date: '2024-10-01' },
+      { label: '录用通知', date: '2025-01-22' },
+      { label: '会议日期', date: '2025-04-28' },
     ]
   },
   {
@@ -104,10 +104,10 @@ const schedules: ScheduleEntry[] = [
     color: '#eab308', website: 'https://neurips.cc/Conferences/2025',
     location: 'San Diego, USA',
     dates: [
-      { label: 'Abstract 截稿', date: '2025-05-15', status: 'upcoming' },
-      { label: '全文截稿', date: '2025-05-22', status: 'upcoming' },
-      { label: '录用通知', date: '2025-09-25', status: 'upcoming' },
-      { label: '会议日期', date: '2025-12-08', status: 'upcoming' },
+      { label: 'Abstract 截稿', date: '2025-05-15' },
+      { label: '全文截稿', date: '2025-05-22' },
+      { label: '录用通知', date: '2025-09-25' },
+      { label: '会议日期', date: '2025-12-08' },
     ]
   },
   {
@@ -115,10 +115,10 @@ const schedules: ScheduleEntry[] = [
     color: '#eab308', website: 'https://neurips.cc/Conferences/2026',
     location: '待定',
     dates: [
-      { label: 'Abstract 截稿', date: '2026-05-15', status: 'upcoming' },
-      { label: '全文截稿', date: '2026-05-22', status: 'upcoming' },
-      { label: '录用通知', date: '2026-09-25', status: 'upcoming' },
-      { label: '会议日期', date: '2026-12-07', status: 'upcoming' },
+      { label: 'Abstract 截稿', date: '2026-05-15' },
+      { label: '全文截稿', date: '2026-05-22' },
+      { label: '录用通知', date: '2026-09-25' },
+      { label: '会议日期', date: '2026-12-07' },
     ]
   },
 ]
@@ -191,6 +191,10 @@ function getStatusClass(dates: ScheduleEntry['dates']): string {
   return 'status-ended'
 }
 
+function getTimelineStatus(dateStr: string): 'past' | 'upcoming' {
+  return new Date(dateStr) < new Date() ? 'past' : 'upcoming'
+}
+
 const selectedConf = ref<string | null>(null)
 const filteredSchedules = computed(() => {
   if (!selectedConf.value) return schedules
@@ -253,7 +257,7 @@ const filteredSchedules = computed(() => {
         </div>
 
         <div class="schedule-timeline">
-          <div v-for="(d, i) in entry.dates" :key="i" class="timeline-item" :class="{ past: d.status === 'past', upcoming: d.status === 'upcoming', open: d.status === 'open' }">
+          <div v-for="(d, i) in entry.dates" :key="i" class="timeline-item" :class="getTimelineStatus(d.date)">
             <div class="timeline-dot"></div>
             <div v-if="i < entry.dates.length - 1" class="timeline-line"></div>
             <div class="timeline-content">

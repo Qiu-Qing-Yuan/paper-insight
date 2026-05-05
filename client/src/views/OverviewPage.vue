@@ -74,7 +74,7 @@ const isACL = computed(() => store.activeConference === 'ACL')
         <div v-for="(subs, cat) in sortedCatSubMap" :key="cat" class="cat-group">
           <div class="cat-group-title">{{ cat }} ({{ store.categories[cat] }} 篇)</div>
           <div class="cat-group-items">
-            <router-link v-for="(count, sub) in subs" :key="sub" :to="'/papers?sub=' + encodeURIComponent(String(sub))" class="sub-item" style="text-decoration:none">
+            <router-link v-for="(count, sub) in subs" :key="sub" :to="'/papers?subcategory=' + encodeURIComponent(String(sub))" class="sub-item" style="text-decoration:none">
               <span class="sub-item-name">{{ sub }}</span>
               <span class="sub-item-count">{{ count }}</span>
             </router-link>
