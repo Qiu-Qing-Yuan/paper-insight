@@ -1,6 +1,16 @@
 import type { Paper, Conference } from './types'
 import { extractNounKeywords } from './utils'
 
+export interface ScheduleEntry {
+  conf: string
+  fullName: string
+  year: number
+  color: string
+  website: string
+  dates: { label: string; date: string }[]
+  location: string
+}
+
 export interface PaginatedResult {
   items: Paper[]
   total: number
@@ -44,6 +54,28 @@ async function loadFilters(): Promise<FilterOptions> {
     _filters = await r.json()
   }
   return _filters!
+}
+
+// ===== 日程数据（localStorage 缓存，24h TTL） =====
+const SCHEDULES_CACHE_KEY = 'acl_schedules_cache'
+const SCHEDULES_TTL = 24 * 60 * 60 * 1000
+
+export async function fetchSchedules(): Promise<ScheduleEntry[]> {
+  const cached = localStorage.getItem(SCHEDULES_CACHE_KEY)
+  if (cached) {
+    try {
+      const { data, timestamp, version } = JSON.parse(cached)
+      if (Date.now() - timestamp < SCHEDULES_TTL) return data
+    } catch { /* ignore corrupt cache */ }
+  }
+  const r = await fetch('/data/schedules.json')
+  const json = await r.json()
+  localStorage.setItem(SCHEDULES_CACHE_KEY, JSON.stringify({
+    data: json.schedules,
+    timestamp: Date.now(),
+    version: json.version,
+  }))
+  return json.schedules
 }
 
 // ===== 分页查询（客户端筛选 + 分页） =====

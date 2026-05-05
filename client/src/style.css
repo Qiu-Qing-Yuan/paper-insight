@@ -535,7 +535,26 @@ a.home-card{display:block;text-decoration:none;color:inherit}
 .schedule-link{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--accent-text);text-decoration:none;padding:6px 14px;border-radius:8px;background:var(--accent-light);border:1px solid rgba(37,99,235,0.2);transition:all 0.2s}
 .schedule-link:hover{background:rgba(37,99,235,0.2);border-color:rgba(37,99,235,0.35);transform:translateY(-1px)}
 
-/* Hero Countdown */
+/* Conference group section */
+.conf-group-section{margin-bottom:16px}
+.conf-group-section .schedule-card{margin-bottom:0}
+.conf-group-section .schedule-card-old{margin-top:8px;border-top-width:2px;opacity:0.85}
+.conf-group-section .schedule-card-old:hover{opacity:1}
+
+/* Expand/collapse button */
+.expand-btn{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;color:var(--text-tertiary);background:var(--bg-input);border:1px solid var(--border);cursor:pointer;transition:all 0.2s;margin-left:auto;white-space:nowrap}
+.expand-btn:hover{color:var(--text-secondary);border-color:var(--border-hover);background:var(--bg-card-hover)}
+.expand-btn svg{transition:transform 0.25s cubic-bezier(0.4,0,0.2,1)}
+.expand-btn svg.rotated{transform:rotate(180deg)}
+
+/* Filter divider */
+.filter-divider{width:1px;height:24px;background:var(--border);margin:0 4px;flex-shrink:0}
+
+/* Compact timeline for older year cards */
+.schedule-timeline-compact{display:flex;flex-wrap:wrap;gap:6px 14px;margin-bottom:10px}
+.compact-date{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--text-tertiary);white-space:nowrap}
+.compact-date.past{opacity:0.5}
+.compact-dot{width:5px;height:5px;border-radius:50%;background:var(--border-input);flex-shrink:0}
 .hero-countdown{position:relative;border-radius:18px;padding:40px 32px;margin-bottom:20px;overflow:hidden;border:1px solid var(--border);background:var(--bg-card)}
 .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,var(--hero-color,#2563eb) 0%,transparent 70%);opacity:0.06;pointer-events:none}
 .hero-content{position:relative;z-index:1;text-align:center}

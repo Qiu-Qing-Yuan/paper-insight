@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "schedules": [
+    {
+      "conf": "ACL", "fullName": "Annual Meeting of the Association for Computational Linguistics", "year": 2026,
+      "color": "#22c55e", "website": "https://2026.aclweb.org/",
+      "location": "San Diego, USA",
+      "dates": [
+        { "label": "ARR 截稿", "date": "2026-01-05" },
+        { "label": "Commitment 截止", "date": "2026-03-14" },
+        { "label": "录用通知", "date": "2026-04-04" },
+        { "label": "Camera-Ready", "date": "2026-04-19" },
+        { "label": "会议日期", "date": "2026-07-02" }
+      ]
+    },
+    {
+      "conf": "ACL", "fullName": "Annual Meeting of the Association for Computational Linguistics", "year": 2025,
+      "color": "#22c55e", "website": "https://2025.aclweb.org/",
+      "location": "Vienna, Austria",
+      "dates": [
+        { "label": "ARR 截稿", "date": "2025-02-15" },
+        { "label": "Commitment 截止", "date": "2025-04-20" },
+        { "label": "录用通知", "date": "2025-05-15" },
+        { "label": "Camera-Ready", "date": "2025-05-30" },
+        { "label": "会议日期", "date": "2025-07-27" }
+      ]
+    },
+    {
+      "conf": "EMNLP", "fullName": "Conference on Empirical Methods in Natural Language Processing", "year": 2026,
+      "color": "#a855f7", "website": "https://2026.emnlp.org/",
+      "location": "待定",
+      "dates": [
+        { "label": "ARR 截稿", "date": "2026-05-19" },
+        { "label": "Commitment 截止", "date": "2026-08-01" },
+        { "label": "录用通知", "date": "2026-08-20" },
+        { "label": "Camera-Ready", "date": "2026-09-19" },
+        { "label": "会议日期", "date": "2026-11-04" }
+      ]
+    },
+    {
+      "conf": "EMNLP", "fullName": "Conference on Empirical Methods in Natural Language Processing", "year": 2025,
+      "color": "#a855f7", "website": "https://2025.emnlp.org/",
+      "location": "Suzhou, China",
+      "dates": [
+        { "label": "ARR 截稿", "date": "2025-05-19" },
+        { "label": "Commitment 截止", "date": "2025-08-01" },
+        { "label": "录用通知", "date": "2025-08-20" },
+        { "label": "Camera-Ready", "date": "2025-09-19" },
+        { "label": "会议日期", "date": "2025-11-04" }
+      ]
+    },
+    {
+      "conf": "ICML", "fullName": "International Conference on Machine Learning", "year": 2026,
+      "color": "#3b82f6", "website": "https://icml.cc/Conferences/2026",
+      "location": "待定",
+      "dates": [
+        { "label": "全文截稿", "date": "2026-01-31" },
+        { "label": "录用通知", "date": "2026-05-01" },
+        { "label": "会议日期", "date": "2026-07-13" }
+      ]
+    },
+    {
+      "conf": "ICML", "fullName": "International Conference on Machine Learning", "year": 2025,
+      "color": "#3b82f6", "website": "https://icml.cc/Conferences/2025",
+      "location": "Vancouver, Canada",
+      "dates": [
+        { "label": "全文截稿", "date": "2025-01-31" },
+        { "label": "录用通知", "date": "2025-05-01" },
+        { "label": "会议日期", "date": "2025-07-13" }
+      ]
+    },
+    {
+      "conf": "ICLR", "fullName": "International Conference on Learning Representations", "year": 2026,
+      "color": "#06b6d4", "website": "https://iclr.cc/Conferences/2026",
+      "location": "Rio de Janeiro, Brazil",
+      "dates": [
+        { "label": "摘要截稿", "date": "2025-09-20" },
+        { "label": "全文截稿", "date": "2025-09-25" },
+        { "label": "录用通知", "date": "2026-03-17" },
+        { "label": "会议日期", "date": "2026-04-23" }
+      ]
+    },
+    {
+      "conf": "ICLR", "fullName": "International Conference on Learning Representations", "year": 2025,
+      "color": "#06b6d4", "website": "https://iclr.cc/Conferences/2025",
+      "location": "Singapore",
+      "dates": [
+        { "label": "摘要截稿", "date": "2024-09-14" },
+        { "label": "全文截稿", "date": "2024-09-28" },
+        { "label": "录用通知", "date": "2025-01-22" },
+        { "label": "会议日期", "date": "2025-04-24" }
+      ]
+    },
+    {
+      "conf": "NeurIPS", "fullName": "Conference on Neural Information Processing Systems", "year": 2025,
+      "color": "#eab308", "website": "https://neurips.cc/Conferences/2025",
+      "location": "San Diego, USA",
+      "dates": [
+        { "label": "Abstract 截稿", "date": "2025-05-11" },
+        { "label": "全文截稿", "date": "2025-05-16" },
+        { "label": "录用通知", "date": "2025-09-18" },
+        { "label": "会议日期", "date": "2025-12-01" }
+      ]
+    },
+    {
+      "conf": "NeurIPS", "fullName": "Conference on Neural Information Processing Systems", "year": 2026,
+      "color": "#eab308", "website": "https://neurips.cc/Conferences/2026",
+      "location": "待定",
+      "dates": [
+        { "label": "Abstract 截稿", "date": "2026-05-04" },
+        { "label": "全文截稿", "date": "2026-05-06" },
+        { "label": "录用通知", "date": "2026-09-18" },
+        { "label": "会议日期", "date": "2026-12-06" }
+      ]
+    }
+  ]
+}

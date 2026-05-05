@@ -1,133 +1,18 @@
 <script setup lang="ts">
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { usePapersStore } from '../stores/papers'
+import { fetchSchedules } from '../api'
+import type { ScheduleEntry } from '../api'
 
 const store = usePapersStore()
 
-interface ScheduleEntry {
-  conf: string
-  fullName: string
-  year: number
-  color: string
-  website: string
-  dates: { label: string; date: string }[]
-  location: string
-}
+const schedules = ref<ScheduleEntry[]>([])
+const schedulesLoaded = ref(false)
 
-const schedules: ScheduleEntry[] = [
-  {
-    conf: 'ACL', fullName: 'Annual Meeting of the Association for Computational Linguistics', year: 2026,
-    color: '#22c55e', website: 'https://2026.aclweb.org/',
-    location: 'San Diego, USA',
-    dates: [
-      { label: 'ARR 截稿', date: '2026-01-05' },
-      { label: 'Commitment 截止', date: '2026-03-14' },
-      { label: '录用通知', date: '2026-04-04' },
-      { label: 'Camera-Ready', date: '2026-04-19' },
-      { label: '会议日期', date: '2026-07-02' },
-    ]
-  },
-  {
-    conf: 'ACL', fullName: 'Annual Meeting of the Association for Computational Linguistics', year: 2025,
-    color: '#22c55e', website: 'https://2025.aclweb.org/',
-    location: 'Vienna, Austria',
-    dates: [
-      { label: 'ARR 截稿', date: '2025-02-15' },
-      { label: 'Commitment 截止', date: '2025-04-20' },
-      { label: '录用通知', date: '2025-05-15' },
-      { label: 'Camera-Ready', date: '2025-05-30' },
-      { label: '会议日期', date: '2025-07-27' },
-    ]
-  },
-  {
-    conf: 'EMNLP', fullName: 'Conference on Empirical Methods in Natural Language Processing', year: 2026,
-    color: '#a855f7', website: 'https://2026.emnlp.org/',
-    location: '待定',
-    dates: [
-      { label: 'ARR 截稿', date: '2026-05-19' },
-      { label: 'Commitment 截止', date: '2026-08-01' },
-      { label: '录用通知', date: '2026-08-20' },
-      { label: 'Camera-Ready', date: '2026-09-19' },
-      { label: '会议日期', date: '2026-11-04' },
-    ]
-  },
-  {
-    conf: 'EMNLP', fullName: 'Conference on Empirical Methods in Natural Language Processing', year: 2025,
-    color: '#a855f7', website: 'https://2025.emnlp.org/',
-    location: 'Suzhou, China',
-    dates: [
-      { label: 'ARR 截稿', date: '2025-05-19' },
-      { label: 'Commitment 截止', date: '2025-08-01' },
-      { label: '录用通知', date: '2025-08-20' },
-      { label: 'Camera-Ready', date: '2025-09-19' },
-      { label: '会议日期', date: '2025-11-04' },
-    ]
-  },
-  {
-    conf: 'ICML', fullName: 'International Conference on Machine Learning', year: 2026,
-    color: '#3b82f6', website: 'https://icml.cc/Conferences/2026',
-    location: '待定',
-    dates: [
-      { label: '全文截稿', date: '2026-01-31' },
-      { label: '录用通知', date: '2026-05-01' },
-      { label: '会议日期', date: '2026-07-13' },
-    ]
-  },
-  {
-    conf: 'ICML', fullName: 'International Conference on Machine Learning', year: 2025,
-    color: '#3b82f6', website: 'https://icml.cc/Conferences/2025',
-    location: 'Vancouver, Canada',
-    dates: [
-      { label: '全文截稿', date: '2025-01-31' },
-      { label: '录用通知', date: '2025-05-01' },
-      { label: '会议日期', date: '2025-07-13' },
-    ]
-  },
-  {
-    conf: 'ICLR', fullName: 'International Conference on Learning Representations', year: 2026,
-    color: '#06b6d4', website: 'https://iclr.cc/Conferences/2026',
-    location: 'Rio de Janeiro, Brazil',
-    dates: [
-      { label: '摘要截稿', date: '2025-09-20' },
-      { label: '全文截稿', date: '2025-09-25' },
-      { label: '录用通知', date: '2026-03-17' },
-      { label: '会议日期', date: '2026-04-23' },
-    ]
-  },
-  {
-    conf: 'ICLR', fullName: 'International Conference on Learning Representations', year: 2025,
-    color: '#06b6d4', website: 'https://iclr.cc/Conferences/2025',
-    location: 'Singapore',
-    dates: [
-      { label: '摘要截稿', date: '2024-09-14' },
-      { label: '全文截稿', date: '2024-09-28' },
-      { label: '录用通知', date: '2025-01-22' },
-      { label: '会议日期', date: '2025-04-24' },
-    ]
-  },
-  {
-    conf: 'NeurIPS', fullName: 'Conference on Neural Information Processing Systems', year: 2025,
-    color: '#eab308', website: 'https://neurips.cc/Conferences/2025',
-    location: 'San Diego, USA',
-    dates: [
-      { label: 'Abstract 截稿', date: '2025-05-11' },
-      { label: '全文截稿', date: '2025-05-16' },
-      { label: '录用通知', date: '2025-09-18' },
-      { label: '会议日期', date: '2025-12-01' },
-    ]
-  },
-  {
-    conf: 'NeurIPS', fullName: 'Conference on Neural Information Processing Systems', year: 2026,
-    color: '#eab308', website: 'https://neurips.cc/Conferences/2026',
-    location: '待定',
-    dates: [
-      { label: 'Abstract 截稿', date: '2026-05-04' },
-      { label: '全文截稿', date: '2026-05-06' },
-      { label: '录用通知', date: '2026-09-18' },
-      { label: '会议日期', date: '2026-12-06' },
-    ]
-  },
-]
+onMounted(async () => {
+  schedules.value = await fetchSchedules()
+  schedulesLoaded.value = true
+})
 
 const confColors: Record<string, string> = {
   ACL: '#22c55e',
@@ -147,37 +32,6 @@ onMounted(() => {
 onUnmounted(() => {
   if (timer) clearInterval(timer)
 })
-
-// Group schedules by conference
-const groupedSchedules = computed(() => {
-  const groups: Record<string, ScheduleEntry[]> = {}
-  for (const s of schedules) {
-    if (!groups[s.conf]) groups[s.conf] = []
-    groups[s.conf].push(s)
-  }
-  for (const conf of Object.keys(groups)) {
-    groups[conf].sort((a, b) => b.year - a.year)
-  }
-  return groups
-})
-
-// All upcoming deadlines sorted by date
-const allUpcomingDeadlines = computed(() => {
-  const n = now.value
-  const result: { conf: string; year: number; label: string; date: string; color: string }[] = []
-  for (const s of schedules) {
-    for (const d of s.dates) {
-      if (new Date(d.date) >= n) {
-        result.push({ conf: s.conf, year: s.year, label: d.label, date: d.date, color: s.color })
-      }
-    }
-  }
-  result.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-  return result
-})
-
-// Nearest upcoming deadline (hero countdown)
-const heroDeadline = computed(() => allUpcomingDeadlines.value[0] || null)
 
 // Countdown breakdown for a target date
 function countdown(dateStr: string): { days: number; hours: number; minutes: number; seconds: number; total: number } {
@@ -263,15 +117,77 @@ function nextDeadline(dates: ScheduleEntry['dates']): { label: string; date: str
   return null
 }
 
+// Filter state
 const selectedConf = ref<string | null>(null)
-const filteredSchedules = computed(() => {
-  if (!selectedConf.value) return schedules
-  return schedules.filter(s => s.conf === selectedConf.value)
+const selectedYear = ref<number | null>(null)
+const expandedConfs = ref<Set<string>>(new Set())
+
+// All available years
+const availableYears = computed(() => {
+  const years = new Set(schedules.value.map(s => s.year))
+  return Array.from(years).sort((a, b) => b - a)
 })
+
+// Grouped by conf, sorted by year desc. Each group: { latest, older[] }
+interface ConfGroup {
+  conf: string
+  latest: ScheduleEntry
+  older: ScheduleEntry[]
+}
+const displayGroups = computed((): ConfGroup[] => {
+  const filtered = schedules.value.filter(s => {
+    if (selectedConf.value && s.conf !== selectedConf.value) return false
+    if (selectedYear.value && s.year !== selectedYear.value) return false
+    return true
+  })
+  const groups: Record<string, ScheduleEntry[]> = {}
+  for (const s of filtered) {
+    if (!groups[s.conf]) groups[s.conf] = []
+    groups[s.conf].push(s)
+  }
+  return Object.entries(groups)
+    .map(([conf, entries]) => {
+      entries.sort((a, b) => b.year - a.year)
+      return { conf, latest: entries[0], older: entries.slice(1) }
+    })
+    .sort((a, b) => a.latest.year - b.latest.year || a.conf.localeCompare(b.conf))
+})
+
+// All upcoming deadlines sorted by date
+const allUpcomingDeadlines = computed(() => {
+  const n = now.value
+  const result: { conf: string; year: number; label: string; date: string; color: string }[] = []
+  for (const s of schedules.value) {
+    for (const d of s.dates) {
+      if (new Date(d.date) >= n) {
+        result.push({ conf: s.conf, year: s.year, label: d.label, date: d.date, color: s.color })
+      }
+    }
+  }
+  result.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+  return result
+})
+
+// Nearest upcoming deadline (hero countdown)
+const heroDeadline = computed(() => allUpcomingDeadlines.value[0] || null)
+
+function toggleExpand(conf: string) {
+  if (expandedConfs.value.has(conf)) {
+    expandedConfs.value.delete(conf)
+  } else {
+    expandedConfs.value.add(conf)
+  }
+}
 </script>
 
 <template>
   <div class="main">
+    <!-- Loading State -->
+    <div v-if="!schedulesLoaded" class="card" style="text-align:center;padding:60px 20px">
+      <div class="loading">正在加载会议日程</div>
+    </div>
+
+    <template v-else>
     <!-- Hero Countdown -->
     <div v-if="heroDeadline" class="hero-countdown" :style="{ '--hero-color': heroDeadline.color }">
       <div class="hero-bg"></div>
@@ -326,62 +242,70 @@ const filteredSchedules = computed(() => {
       </div>
     </div>
 
-    <!-- Conference filter -->
+    <!-- Conference + Year filter -->
     <div class="conf-filter-bar">
       <button class="conf-filter-btn" :class="{ active: !selectedConf }" @click="selectedConf = null">全部</button>
-      <button v-for="conf in Object.keys(groupedSchedules)" :key="conf" class="conf-filter-btn" :class="{ active: selectedConf === conf }" @click="selectedConf = conf">
+      <button v-for="conf in Object.keys(confColors)" :key="conf" class="conf-filter-btn" :class="{ active: selectedConf === conf }" @click="selectedConf = conf">
         <span class="conf-filter-dot" :style="{ background: confColors[conf] }"></span>
         {{ conf }}
       </button>
+      <span class="filter-divider"></span>
+      <button class="conf-filter-btn" :class="{ active: !selectedYear }" @click="selectedYear = null">全部年份</button>
+      <button v-for="y in availableYears" :key="y" class="conf-filter-btn year-btn" :class="{ active: selectedYear === y }" @click="selectedYear = y">{{ y }}</button>
     </div>
 
-    <!-- Conference schedule cards -->
-    <div class="schedule-grid">
-      <div v-for="entry in filteredSchedules" :key="entry.conf + entry.year" class="card schedule-card" :style="{ '--card-color': entry.color, borderTopColor: entry.color }">
+    <!-- Conference schedule groups -->
+    <div v-for="group in displayGroups" :key="group.conf" class="conf-group-section">
+      <!-- Latest year: full card -->
+      <div class="card schedule-card" :style="{ '--card-color': group.latest.color, borderTopColor: group.latest.color }">
         <div class="schedule-header">
-          <div class="schedule-conf-badge" :style="{ background: entry.color + '18', color: entry.color, borderColor: entry.color + '30' }">
-            {{ entry.conf }}
+          <div class="schedule-conf-badge" :style="{ background: group.latest.color + '18', color: group.latest.color, borderColor: group.latest.color + '30' }">
+            {{ group.latest.conf }}
           </div>
-          <div class="schedule-year">{{ entry.year }}</div>
-          <span class="schedule-status" :class="getStatusClass(entry.dates)">{{ getStatusLabel(entry.dates) }}</span>
+          <div class="schedule-year">{{ group.latest.year }}</div>
+          <span class="schedule-status" :class="getStatusClass(group.latest.dates)">{{ getStatusLabel(group.latest.dates) }}</span>
+          <button v-if="group.older.length > 0" class="expand-btn" @click="toggleExpand(group.conf)">
+            {{ expandedConfs.has(group.conf) ? '收起' : `${group.older.length} 个历史年份` }}
+            <svg :class="{ rotated: expandedConfs.has(group.conf) }" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
         </div>
 
-        <div class="schedule-full-name">{{ entry.fullName }}</div>
+        <div class="schedule-full-name">{{ group.latest.fullName }}</div>
 
         <div class="schedule-meta">
-          <span v-if="entry.location" class="schedule-location">
+          <span v-if="group.latest.location" class="schedule-location">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            {{ entry.location }}
+            {{ group.latest.location }}
           </span>
-          <span v-if="paperCount(entry.conf, entry.year) > 0" class="schedule-papers">
+          <span v-if="paperCount(group.latest.conf, group.latest.year) > 0" class="schedule-papers">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            {{ paperCount(entry.conf, entry.year) }} 篇论文
+            {{ paperCount(group.latest.conf, group.latest.year) }} 篇论文
           </span>
         </div>
 
         <!-- Progress bar -->
         <div class="timeline-progress">
-          <div class="timeline-progress-bar" :style="{ width: timelineProgress(entry.dates) + '%', background: `linear-gradient(90deg, ${entry.color}80, ${entry.color})` }"></div>
+          <div class="timeline-progress-bar" :style="{ width: timelineProgress(group.latest.dates) + '%', background: `linear-gradient(90deg, ${group.latest.color}80, ${group.latest.color})` }"></div>
         </div>
 
         <!-- Next deadline countdown card -->
-        <div v-if="nextDeadline(entry.dates)" class="next-deadline" :style="{ borderColor: entry.color + '30', background: entry.color + '06' }">
+        <div v-if="nextDeadline(group.latest.dates)" class="next-deadline" :style="{ borderColor: group.latest.color + '30', background: group.latest.color + '06' }">
           <div class="next-deadline-left">
             <span class="next-deadline-label">下一个节点</span>
-            <span class="next-deadline-name">{{ nextDeadline(entry.dates)!.label }}</span>
-            <span class="next-deadline-date">{{ formatDate(nextDeadline(entry.dates)!.date) }}</span>
+            <span class="next-deadline-name">{{ nextDeadline(group.latest.dates)!.label }}</span>
+            <span class="next-deadline-date">{{ formatDate(nextDeadline(group.latest.dates)!.date) }}</span>
           </div>
-          <div class="next-deadline-timer" :style="{ color: entry.color }">
+          <div class="next-deadline-timer" :style="{ color: group.latest.color }">
             <div class="mini-timer">
-              <span class="mini-timer-num">{{ countdown(nextDeadline(entry.dates)!.date).days }}</span>
+              <span class="mini-timer-num">{{ countdown(nextDeadline(group.latest.dates)!.date).days }}</span>
               <span class="mini-timer-unit">天</span>
             </div>
             <div class="mini-timer">
-              <span class="mini-timer-num">{{ pad(countdown(nextDeadline(entry.dates)!.date).hours) }}</span>
+              <span class="mini-timer-num">{{ pad(countdown(nextDeadline(group.latest.dates)!.date).hours) }}</span>
               <span class="mini-timer-unit">时</span>
             </div>
             <div class="mini-timer">
-              <span class="mini-timer-num">{{ pad(countdown(nextDeadline(entry.dates)!.date).minutes) }}</span>
+              <span class="mini-timer-num">{{ pad(countdown(nextDeadline(group.latest.dates)!.date).minutes) }}</span>
               <span class="mini-timer-unit">分</span>
             </div>
           </div>
@@ -389,26 +313,60 @@ const filteredSchedules = computed(() => {
 
         <!-- Timeline -->
         <div class="schedule-timeline">
-          <div v-for="(d, i) in entry.dates" :key="i" class="timeline-item" :class="getTimelineStatus(d.date)">
-            <div class="timeline-dot" :style="getTimelineStatus(d.date) === 'upcoming' ? { borderColor: entry.color, background: entry.color + '20', boxShadow: `0 0 8px ${entry.color}40` } : {}"></div>
-            <div v-if="i < entry.dates.length - 1" class="timeline-line" :style="getTimelineStatus(d.date) === 'past' ? {} : { background: entry.color + '30' }"></div>
+          <div v-for="(d, i) in group.latest.dates" :key="i" class="timeline-item" :class="getTimelineStatus(d.date)">
+            <div class="timeline-dot" :style="getTimelineStatus(d.date) === 'upcoming' ? { borderColor: group.latest.color, background: group.latest.color + '20', boxShadow: `0 0 8px ${group.latest.color}40` } : {}"></div>
+            <div v-if="i < group.latest.dates.length - 1" class="timeline-line" :style="getTimelineStatus(d.date) === 'past' ? {} : { background: group.latest.color + '30' }"></div>
             <div class="timeline-content">
               <span class="timeline-label">{{ d.label }}</span>
               <span class="timeline-date">
                 {{ formatDate(d.date) }}
                 <template v-if="getTimelineStatus(d.date) === 'upcoming'">
-                  <span class="timeline-days" :style="{ color: entry.color }">·{{ daysUntil(d.date) }}天后</span>
+                  <span class="timeline-days" :style="{ color: group.latest.color }">·{{ daysUntil(d.date) }}天后</span>
                 </template>
               </span>
             </div>
           </div>
         </div>
 
-        <a :href="entry.website" target="_blank" class="schedule-link" :style="{ color: entry.color, background: entry.color + '12', borderColor: entry.color + '25' }">
+        <a :href="group.latest.website" target="_blank" class="schedule-link" :style="{ color: group.latest.color, background: group.latest.color + '12', borderColor: group.latest.color + '25' }">
           访问官网
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
         </a>
       </div>
+
+      <!-- Older years: collapsible compact cards -->
+      <template v-if="expandedConfs.has(group.conf)">
+        <div v-for="entry in group.older" :key="entry.conf + entry.year" class="card schedule-card schedule-card-old" :style="{ '--card-color': entry.color, borderTopColor: entry.color + '60' }">
+          <div class="schedule-header">
+            <div class="schedule-conf-badge" :style="{ background: entry.color + '12', color: entry.color + 'aa', borderColor: entry.color + '20' }">
+              {{ entry.conf }}
+            </div>
+            <div class="schedule-year" style="font-size:16px">{{ entry.year }}</div>
+            <span class="schedule-status" :class="getStatusClass(entry.dates)">{{ getStatusLabel(entry.dates) }}</span>
+          </div>
+          <div class="schedule-meta" style="margin-bottom:8px">
+            <span v-if="entry.location" class="schedule-location">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              {{ entry.location }}
+            </span>
+            <span v-if="paperCount(entry.conf, entry.year) > 0" class="schedule-papers">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              {{ paperCount(entry.conf, entry.year) }} 篇论文
+            </span>
+          </div>
+          <!-- Compact timeline: only key dates -->
+          <div class="schedule-timeline-compact">
+            <span v-for="(d, i) in entry.dates" :key="i" class="compact-date" :class="getTimelineStatus(d.date)">
+              <span class="compact-dot" :style="getTimelineStatus(d.date) === 'upcoming' ? { background: entry.color } : {}"></span>
+              {{ d.label }} {{ formatDate(d.date) }}
+            </span>
+          </div>
+          <a :href="entry.website" target="_blank" class="schedule-link" :style="{ color: entry.color, background: entry.color + '0a', borderColor: entry.color + '15', fontSize: '11px', padding: '4px 10px' }">
+            访问官网
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </div>
+      </template>
     </div>
 
     <!-- Quick links -->
@@ -446,5 +404,6 @@ const filteredSchedules = computed(() => {
         </router-link>
       </div>
     </div>
+    </template>
   </div>
 </template>
