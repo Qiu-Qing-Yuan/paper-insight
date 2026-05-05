@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { usePapersStore } from '../stores/papers'
 
 const store = usePapersStore()
@@ -137,6 +137,17 @@ const confColors: Record<string, string> = {
   NeurIPS: '#eab308',
 }
 
+// Live clock - updates every second for real-time countdown
+const now = ref(new Date())
+let timer: ReturnType<typeof setInterval> | null = null
+
+onMounted(() => {
+  timer = setInterval(() => { now.value = new Date() }, 1000)
+})
+onUnmounted(() => {
+  if (timer) clearInterval(timer)
+})
+
 // Group schedules by conference
 const groupedSchedules = computed(() => {
   const groups: Record<string, ScheduleEntry[]> = {}
@@ -144,29 +155,47 @@ const groupedSchedules = computed(() => {
     if (!groups[s.conf]) groups[s.conf] = []
     groups[s.conf].push(s)
   }
-  // Sort each group by year descending
   for (const conf of Object.keys(groups)) {
     groups[conf].sort((a, b) => b.year - a.year)
   }
   return groups
 })
 
-// Upcoming deadlines (next 90 days)
-const upcomingDeadlines = computed(() => {
-  const now = new Date()
-  const result: { conf: string; year: number; label: string; date: string; daysLeft: number; color: string }[] = []
+// All upcoming deadlines sorted by date
+const allUpcomingDeadlines = computed(() => {
+  const n = now.value
+  const result: { conf: string; year: number; label: string; date: string; color: string }[] = []
   for (const s of schedules) {
     for (const d of s.dates) {
-      const target = new Date(d.date)
-      const diff = Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-      if (diff > 0 && diff <= 90) {
-        result.push({ conf: s.conf, year: s.year, label: d.label, date: d.date, daysLeft: diff, color: s.color })
+      if (new Date(d.date) >= n) {
+        result.push({ conf: s.conf, year: s.year, label: d.label, date: d.date, color: s.color })
       }
     }
   }
-  result.sort((a, b) => a.daysLeft - b.daysLeft)
+  result.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
   return result
 })
+
+// Nearest upcoming deadline (hero countdown)
+const heroDeadline = computed(() => allUpcomingDeadlines.value[0] || null)
+
+// Countdown breakdown for a target date
+function countdown(dateStr: string): { days: number; hours: number; minutes: number; seconds: number; total: number } {
+  const diff = new Date(dateStr).getTime() - now.value.getTime()
+  if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0, total: 0 }
+  return {
+    days: Math.floor(diff / 86400000),
+    hours: Math.floor((diff % 86400000) / 3600000),
+    minutes: Math.floor((diff % 3600000) / 60000),
+    seconds: Math.floor((diff % 60000) / 1000),
+    total: diff,
+  }
+}
+
+// Pad number to 2 digits
+function pad(n: number): string {
+  return String(n).padStart(2, '0')
+}
 
 // Paper count for a conference
 function paperCount(conf: string, year: number): number {
@@ -181,12 +210,17 @@ function formatDate(dateStr: string): string {
   return `${d.getMonth() + 1}月${d.getDate()}日`
 }
 
+function formatDateFull(dateStr: string): string {
+  const d = new Date(dateStr)
+  return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`
+}
+
 function getStatusLabel(dates: ScheduleEntry['dates']): string {
-  const now = new Date()
+  const n = now.value
   const lastDate = new Date(dates[dates.length - 1].date)
-  if (now > lastDate) return '已结束'
+  if (n > lastDate) return '已结束'
   const firstDate = new Date(dates[0].date)
-  if (now < firstDate) return '征稿中'
+  if (n < firstDate) return '征稿中'
   return '进行中'
 }
 
@@ -198,21 +232,31 @@ function getStatusClass(dates: ScheduleEntry['dates']): string {
 }
 
 function getTimelineStatus(dateStr: string): 'past' | 'upcoming' {
-  return new Date(dateStr) < new Date() ? 'past' : 'upcoming'
+  return new Date(dateStr) < now.value ? 'past' : 'upcoming'
+}
+
+// Progress percentage through the timeline (0-100)
+function timelineProgress(dates: ScheduleEntry['dates']): number {
+  const n = now.value.getTime()
+  const start = new Date(dates[0].date).getTime()
+  const end = new Date(dates[dates.length - 1].date).getTime()
+  if (n <= start) return 0
+  if (n >= end) return 100
+  return Math.round(((n - start) / (end - start)) * 100)
 }
 
 function daysUntil(dateStr: string): number {
-  const now = new Date()
-  now.setHours(0, 0, 0, 0)
+  const n = new Date(now.value)
+  n.setHours(0, 0, 0, 0)
   const target = new Date(dateStr)
   target.setHours(0, 0, 0, 0)
-  return Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+  return Math.ceil((target.getTime() - n.getTime()) / 86400000)
 }
 
 function nextDeadline(dates: ScheduleEntry['dates']): { label: string; date: string; days: number } | null {
-  const now = new Date()
+  const n = now.value
   for (const d of dates) {
-    if (new Date(d.date) >= now) {
+    if (new Date(d.date) >= n) {
       return { label: d.label, date: d.date, days: daysUntil(d.date) }
     }
   }
@@ -228,20 +272,55 @@ const filteredSchedules = computed(() => {
 
 <template>
   <div class="main">
-    <!-- Upcoming deadlines banner -->
-    <div v-if="upcomingDeadlines.length > 0" class="card deadline-banner" style="border-left: 3px solid var(--accent)">
+    <!-- Hero Countdown -->
+    <div v-if="heroDeadline" class="hero-countdown" :style="{ '--hero-color': heroDeadline.color }">
+      <div class="hero-bg"></div>
+      <div class="hero-content">
+        <div class="hero-badge" :style="{ background: heroDeadline.color + '20', color: heroDeadline.color, borderColor: heroDeadline.color + '40' }">
+          <span class="hero-badge-dot" :style="{ background: heroDeadline.color }"></span>
+          {{ heroDeadline.conf }} {{ heroDeadline.year }}
+        </div>
+        <div class="hero-label">{{ heroDeadline.label }}</div>
+        <div class="hero-date">{{ formatDateFull(heroDeadline.date) }}</div>
+        <div class="hero-timer">
+          <div class="timer-block">
+            <span class="timer-num">{{ pad(countdown(heroDeadline.date).days) }}</span>
+            <span class="timer-unit">天</span>
+          </div>
+          <span class="timer-sep">:</span>
+          <div class="timer-block">
+            <span class="timer-num">{{ pad(countdown(heroDeadline.date).hours) }}</span>
+            <span class="timer-unit">时</span>
+          </div>
+          <span class="timer-sep">:</span>
+          <div class="timer-block">
+            <span class="timer-num">{{ pad(countdown(heroDeadline.date).minutes) }}</span>
+            <span class="timer-unit">分</span>
+          </div>
+          <span class="timer-sep">:</span>
+          <div class="timer-block">
+            <span class="timer-num">{{ pad(countdown(heroDeadline.date).seconds) }}</span>
+            <span class="timer-unit">秒</span>
+          </div>
+        </div>
+        <div class="hero-hint">距离下一个截稿节点</div>
+      </div>
+    </div>
+
+    <!-- Upcoming deadlines list -->
+    <div v-if="allUpcomingDeadlines.length > 1" class="card">
       <div class="section-header">
-        <div class="card-title">近期截稿提醒</div>
-        <span style="color:var(--text-muted);font-size:13px">未来 90 天内</span>
+        <div class="card-title">即将到来</div>
+        <span style="color:var(--text-muted);font-size:12px">按时间排序</span>
       </div>
       <div class="deadline-list">
-        <div v-for="d in upcomingDeadlines" :key="d.conf + d.year + d.label" class="deadline-item">
+        <div v-for="(d, i) in allUpcomingDeadlines.slice(0, 8)" :key="d.conf + d.year + d.label" class="deadline-item" :class="{ 'deadline-first': i === 0 }">
           <span class="deadline-dot" :style="{ background: d.color }"></span>
           <span class="deadline-conf">{{ d.conf }} {{ d.year }}</span>
           <span class="deadline-label">{{ d.label }}</span>
           <span class="deadline-date">{{ formatDate(d.date) }}</span>
-          <span class="deadline-countdown" :class="{ urgent: d.daysLeft <= 14 }">
-            {{ d.daysLeft <= 0 ? '今天' : d.daysLeft + ' 天后' }}
+          <span class="deadline-countdown" :class="{ urgent: daysUntil(d.date) <= 7 }" :style="daysUntil(d.date) > 7 ? { color: d.color } : {}">
+            {{ countdown(d.date).days }}天{{ pad(countdown(d.date).hours) }}:{{ pad(countdown(d.date).minutes) }}
           </span>
         </div>
       </div>
@@ -258,7 +337,7 @@ const filteredSchedules = computed(() => {
 
     <!-- Conference schedule cards -->
     <div class="schedule-grid">
-      <div v-for="entry in filteredSchedules" :key="entry.conf + entry.year" class="card schedule-card" :style="{ borderTopColor: entry.color }">
+      <div v-for="entry in filteredSchedules" :key="entry.conf + entry.year" class="card schedule-card" :style="{ '--card-color': entry.color, borderTopColor: entry.color }">
         <div class="schedule-header">
           <div class="schedule-conf-badge" :style="{ background: entry.color + '18', color: entry.color, borderColor: entry.color + '30' }">
             {{ entry.conf }}
@@ -280,33 +359,52 @@ const filteredSchedules = computed(() => {
           </span>
         </div>
 
-        <!-- Next deadline highlight -->
-        <div v-if="nextDeadline(entry.dates)" class="next-deadline" :style="{ borderColor: entry.color + '40', background: entry.color + '08' }">
-          <span class="next-deadline-label">下一个节点</span>
-          <span class="next-deadline-name">{{ nextDeadline(entry.dates)!.label }}</span>
-          <span class="next-deadline-date">{{ formatDate(nextDeadline(entry.dates)!.date) }}</span>
-          <span class="next-deadline-days" :class="{ urgent: nextDeadline(entry.dates)!.days <= 14 }" :style="nextDeadline(entry.dates)!.days > 14 ? { color: entry.color } : {}">
-            {{ nextDeadline(entry.dates)!.days <= 0 ? '今天' : nextDeadline(entry.dates)!.days + ' 天后' }}
-          </span>
+        <!-- Progress bar -->
+        <div class="timeline-progress">
+          <div class="timeline-progress-bar" :style="{ width: timelineProgress(entry.dates) + '%', background: `linear-gradient(90deg, ${entry.color}80, ${entry.color})` }"></div>
         </div>
 
+        <!-- Next deadline countdown card -->
+        <div v-if="nextDeadline(entry.dates)" class="next-deadline" :style="{ borderColor: entry.color + '30', background: entry.color + '06' }">
+          <div class="next-deadline-left">
+            <span class="next-deadline-label">下一个节点</span>
+            <span class="next-deadline-name">{{ nextDeadline(entry.dates)!.label }}</span>
+            <span class="next-deadline-date">{{ formatDate(nextDeadline(entry.dates)!.date) }}</span>
+          </div>
+          <div class="next-deadline-timer" :style="{ color: entry.color }">
+            <div class="mini-timer">
+              <span class="mini-timer-num">{{ countdown(nextDeadline(entry.dates)!.date).days }}</span>
+              <span class="mini-timer-unit">天</span>
+            </div>
+            <div class="mini-timer">
+              <span class="mini-timer-num">{{ pad(countdown(nextDeadline(entry.dates)!.date).hours) }}</span>
+              <span class="mini-timer-unit">时</span>
+            </div>
+            <div class="mini-timer">
+              <span class="mini-timer-num">{{ pad(countdown(nextDeadline(entry.dates)!.date).minutes) }}</span>
+              <span class="mini-timer-unit">分</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline -->
         <div class="schedule-timeline">
           <div v-for="(d, i) in entry.dates" :key="i" class="timeline-item" :class="getTimelineStatus(d.date)">
-            <div class="timeline-dot" :style="getTimelineStatus(d.date) === 'upcoming' ? { borderColor: entry.color, background: entry.color + '20' } : {}"></div>
-            <div v-if="i < entry.dates.length - 1" class="timeline-line"></div>
+            <div class="timeline-dot" :style="getTimelineStatus(d.date) === 'upcoming' ? { borderColor: entry.color, background: entry.color + '20', boxShadow: `0 0 8px ${entry.color}40` } : {}"></div>
+            <div v-if="i < entry.dates.length - 1" class="timeline-line" :style="getTimelineStatus(d.date) === 'past' ? {} : { background: entry.color + '30' }"></div>
             <div class="timeline-content">
               <span class="timeline-label">{{ d.label }}</span>
               <span class="timeline-date">
                 {{ formatDate(d.date) }}
                 <template v-if="getTimelineStatus(d.date) === 'upcoming'">
-                  <span class="timeline-days" :style="{ color: entry.color }">({{ daysUntil(d.date) }}天)</span>
+                  <span class="timeline-days" :style="{ color: entry.color }">·{{ daysUntil(d.date) }}天后</span>
                 </template>
               </span>
             </div>
           </div>
         </div>
 
-        <a :href="entry.website" target="_blank" class="schedule-link">
+        <a :href="entry.website" target="_blank" class="schedule-link" :style="{ color: entry.color, background: entry.color + '12', borderColor: entry.color + '25' }">
           访问官网
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
         </a>

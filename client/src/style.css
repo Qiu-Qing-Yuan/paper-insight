@@ -509,9 +509,9 @@ a.home-card{display:block;text-decoration:none;color:inherit}
 .schedule-location,.schedule-papers{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--text-muted)}
 .schedule-location svg,.schedule-papers svg{opacity:0.6}
 
-.next-deadline{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;border:1px solid;margin-bottom:12px}
+.next-deadline{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;border:1px solid;margin-bottom:12px}
 .next-deadline-label{font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap}
-.next-deadline-name{font-size:12px;font-weight:600;color:var(--text-secondary);flex:1}
+.next-deadline-name{font-size:13px;font-weight:600;color:var(--text-secondary)}
 .next-deadline-date{font-size:12px;color:var(--text-tertiary);white-space:nowrap}
 .next-deadline-days{font-size:12px;font-weight:700;white-space:nowrap;padding:2px 8px;border-radius:6px;background:var(--accent-light)}
 .next-deadline-days.urgent{color:#ef4444;background:rgba(239,68,68,0.12)}
@@ -535,10 +535,41 @@ a.home-card{display:block;text-decoration:none;color:inherit}
 .schedule-link{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--accent-text);text-decoration:none;padding:6px 14px;border-radius:8px;background:var(--accent-light);border:1px solid rgba(37,99,235,0.2);transition:all 0.2s}
 .schedule-link:hover{background:rgba(37,99,235,0.2);border-color:rgba(37,99,235,0.35);transform:translateY(-1px)}
 
+/* Hero Countdown */
+.hero-countdown{position:relative;border-radius:18px;padding:40px 32px;margin-bottom:20px;overflow:hidden;border:1px solid var(--border);background:var(--bg-card)}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,var(--hero-color,#2563eb) 0%,transparent 70%);opacity:0.06;pointer-events:none}
+.hero-content{position:relative;z-index:1;text-align:center}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;border:1px solid;margin-bottom:12px}
+.hero-badge-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.hero-label{font-size:16px;font-weight:700;color:var(--text-bright);margin-bottom:4px}
+.hero-date{font-size:13px;color:var(--text-tertiary);margin-bottom:20px}
+.hero-timer{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:16px}
+.timer-block{display:flex;flex-direction:column;align-items:center;min-width:64px}
+.timer-num{font-size:48px;font-weight:800;line-height:1;color:var(--text-bright);font-variant-numeric:tabular-nums;font-family:'Playfair Display','Noto Sans SC',sans-serif}
+.timer-unit{font-size:11px;font-weight:600;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+.timer-sep{font-size:36px;font-weight:300;color:var(--text-dim);margin:0 2px;align-self:flex-start;padding-top:6px}
+.hero-hint{font-size:12px;color:var(--text-muted);font-weight:500}
+
+/* Timeline Progress Bar */
+.timeline-progress{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:12px}
+.timeline-progress-bar{height:100%;border-radius:2px;transition:width 0.6s cubic-bezier(0.4,0,0.2,1)}
+
+/* Next Deadline Timer */
+.next-deadline-left{display:flex;flex-direction:column;gap:1px;flex:1;min-width:0}
+.next-deadline-timer{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.mini-timer{display:flex;flex-direction:column;align-items:center;min-width:32px}
+.mini-timer-num{font-size:20px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.mini-timer-unit{font-size:9px;font-weight:600;color:var(--text-muted);margin-top:2px}
+
 @media(max-width:768px){
   .schedule-grid{grid-template-columns:1fr}
   .conf-filter-bar{gap:6px}
   .conf-filter-btn{padding:6px 12px;font-size:12px}
+  .hero-countdown{padding:28px 20px}
+  .timer-num{font-size:32px}
+  .timer-sep{font-size:24px;padding-top:4px}
+  .timer-block{min-width:48px}
+  .hero-label{font-size:14px}
   .deadline-item{flex-wrap:wrap;gap:6px}
   .deadline-label{flex-basis:100%;order:3}
   .next-deadline{flex-wrap:wrap;gap:4px}
