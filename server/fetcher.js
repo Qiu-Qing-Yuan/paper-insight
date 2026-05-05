@@ -48,6 +48,7 @@ async function parseAnthologyVolumes(year, volumes, source, onProgress) {
   const linkRegex = /href=(?:\/)?(\d{4}\.[a-z]+(?:-[a-z]+)*\.\d+)[\/">][\s\S]*?>([\s\S]*?)<\/a>/g;
 
   for (const { vol, venueType } of volumes) {
+    linkRegex.lastIndex = 0;
     const volUrl = `https://aclanthology.org/volumes/${vol}/`;
     if (onProgress) onProgress(papers.length, 0, `${source} ${year}: 正在获取 ${vol}...`);
 
@@ -82,14 +83,26 @@ async function parseAnthologyVolumes(year, volumes, source, onProgress) {
   return papers;
 }
 
-// ===== EMNLP via ACL Anthology =====
+// ===== EMNLP via ACL Anthology (with OpenReview fallback) =====
 
 async function fetchEMNLP(year = 2024, onProgress) {
   const volumes = [
     { vol: `${year}.emnlp-main`, venueType: '主会' },
     { vol: `${year}.findings-emnlp`, venueType: 'Findings' },
   ];
-  const papers = parseAnthologyVolumes(year, volumes, 'EMNLP', onProgress);
+  const papers = await parseAnthologyVolumes(year, volumes, 'EMNLP', onProgress);
+
+  // Fallback to OpenReview if Anthology returns nothing (e.g. year not yet indexed)
+  if (papers.length === 0) {
+    if (onProgress) onProgress(0, 0, `EMNLP ${year}: Anthology 无数据, 尝试 OpenReview...`);
+    const orPapers = await fetchOpenReviewPapers(
+      [`EMNLP.cc/${year}/Conference/-/Submission`],
+      'https://api2.openreview.net',
+      'EMNLP', year, onProgress
+    );
+    papers.push(...orPapers);
+  }
+
   if (onProgress) onProgress(papers.length, papers.length, `EMNLP ${year}: 完成, 共 ${papers.length} 篇`);
   return papers;
 }
