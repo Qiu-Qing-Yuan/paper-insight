@@ -31,51 +31,11 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 // ===== ICML via OpenReview API v2 =====
 
 async function fetchICML(year = 2024, onProgress) {
-  const papers = [];
-  const invitation = `ICML.cc/${year}/Conference/-/Submission`;
-  let offset = 0;
-  const limit = 100;
-  let totalCount = null;
-
-  while (true) {
-    const url = `https://api2.openreview.net/notes?invitation=${encodeURIComponent(invitation)}&limit=${limit}&offset=${offset}`;
-    if (onProgress) onProgress(papers.length, totalCount || 0, `ICML ${year}: 正在获取第 ${offset + 1}-${offset + limit} 篇...`);
-
-    let data;
-    try {
-      const raw = await fetchUrl(url);
-      data = JSON.parse(raw);
-    } catch (e) {
-      if (onProgress) onProgress(papers.length, papers.length, `ICML ${year}: 请求失败 - ${e.message}`);
-      break;
-    }
-
-    if (totalCount === null) totalCount = data.count || 0;
-    const notes = data.notes || [];
-    if (notes.length === 0) break;
-
-    for (const note of notes) {
-      const c = note.content || {};
-      const rawVenue = (c.venue && c.venue.value) || '';
-      const venueType = rawVenue.toLowerCase().includes('workshop') ? 'Workshop' : '主会';
-      papers.push({
-        id: note.id || '',
-        title: (c.title && c.title.value) || '',
-        authors: (c.authors && c.authors.value) || [],
-        venue: venueType,
-        abstract_en: (c.abstract && c.abstract.value) || '',
-        abstract_zh: '',
-        pdf_url: (c.pdf && c.pdf.value) || '',
-        source: 'ICML',
-        year,
-      });
-    }
-
-    offset += limit;
-    if (offset >= totalCount) break;
-    await sleep(500); // rate limit
-  }
-
+  const papers = await fetchOpenReviewPapers(
+    [`ICML.cc/${year}/Conference/-/Submission`],
+    'https://api2.openreview.net',
+    'ICML', year, onProgress
+  );
   if (onProgress) onProgress(papers.length, papers.length, `ICML ${year}: 完成, 共 ${papers.length} 篇`);
   return papers;
 }
@@ -221,7 +181,13 @@ async function fetchOpenReviewPapers(invitations, baseUrl, source, year, onProgr
         const c = note.content || {};
         if (papers.some(p => p.id === note.id)) continue;
         const rawVenue = fieldValue(c, 'venue');
-        const venueType = rawVenue.toLowerCase().includes('workshop') ? 'Workshop' : '主会';
+
+        // Skip non-accepted papers (withdrawn, rejected, desk-rejected, submitted)
+        const lv = rawVenue.toLowerCase();
+        if (lv.includes('withdrawn') || lv.includes('rejected') || lv.startsWith('submitted to')) continue;
+
+        // Classify venue type
+        const venueType = lv.includes('workshop') ? 'Workshop' : '主会';
         papers.push({
           id: note.id || '',
           title: fieldValue(c, 'title'),
@@ -274,61 +240,11 @@ async function fetchICLR(year = 2024, onProgress) {
 // ===== NeurIPS via OpenReview =====
 
 async function fetchNeurIPS(year = 2024, onProgress) {
-  const papers = [];
-  // NeurIPS uses OpenReview with different invitation patterns
-  const invitations = [
-    `NeurIPS.cc/${year}/Conference/-/Submission`,
-    `NeurIPS.cc/${year}/Conference/-/Poster`,
-  ];
-
-  for (const invitation of invitations) {
-    let offset = 0;
-    const limit = 100;
-    let totalCount = null;
-
-    while (true) {
-      const url = `https://api2.openreview.net/notes?invitation=${encodeURIComponent(invitation)}&limit=${limit}&offset=${offset}`;
-      if (onProgress) onProgress(papers.length, totalCount || 0, `NeurIPS ${year}: 正在获取 (offset=${offset})...`);
-
-      let data;
-      try {
-        const raw = await fetchUrl(url);
-        data = JSON.parse(raw);
-      } catch (e) {
-        if (onProgress) onProgress(papers.length, papers.length, `NeurIPS ${year}: 请求失败 - ${e.message}`);
-        break;
-      }
-
-      if (totalCount === null) totalCount = data.count || 0;
-      const notes = data.notes || [];
-      if (notes.length === 0) break;
-
-      for (const note of notes) {
-        const c = note.content || {};
-        // Avoid duplicates
-        if (papers.some(p => p.id === note.id)) continue;
-        const rawVenue = (c.venue && c.venue.value) || '';
-        const venueType = rawVenue.toLowerCase().includes('workshop') ? 'Workshop' : '主会';
-        papers.push({
-          id: note.id || '',
-          title: (c.title && c.title.value) || '',
-          authors: (c.authors && c.authors.value) || [],
-          venue: venueType,
-          abstract_en: (c.abstract && c.abstract.value) || '',
-          abstract_zh: '',
-          pdf_url: (c.pdf && c.pdf.value) || '',
-          source: 'NeurIPS',
-          year,
-        });
-      }
-
-      offset += limit;
-      if (offset >= totalCount) break;
-      await sleep(500);
-    }
-
-    if (papers.length > 0) break; // Got data from this invitation
-  }
+  let papers = await fetchOpenReviewPapers(
+    [`NeurIPS.cc/${year}/Conference/-/Submission`, `NeurIPS.cc/${year}/Conference/-/Poster`],
+    'https://api2.openreview.net',
+    'NeurIPS', year, onProgress
+  );
 
   // Fallback: scrape proceedings.neurips.cc if OpenReview returns nothing
   if (papers.length === 0) {
