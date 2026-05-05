@@ -1,12 +1,14 @@
 import { ref, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { usePapersStore } from '../stores/papers'
 import type { Paper } from '../types'
-import { queryPapers, fetchFilterOptions } from '../api'
+import { queryPapers, computeFilterOptions } from '../api'
 import type { FilterOptions } from '../api'
 
 export function usePaginatedPapers() {
   const route = useRoute()
   const router = useRouter()
+  const store = usePapersStore()
 
   // Filter state
   const category = ref('')
@@ -23,14 +25,13 @@ export function usePaginatedPapers() {
   const totalPages = ref(0)
   const loading = ref(false)
 
-  // Filter options from server
+  // Filter options computed from current conference data
   const filterOptions = ref<FilterOptions | null>(null)
 
-  // Load filter options once
-  async function loadFilters() {
-    try {
-      filterOptions.value = await fetchFilterOptions()
-    } catch { /* ignore */ }
+  function updateFilterOptions() {
+    if (store.papers.length > 0) {
+      filterOptions.value = computeFilterOptions(store.papers)
+    }
   }
 
   // Fetch papers with current filters
@@ -45,7 +46,7 @@ export function usePaginatedPapers() {
         venue: venue.value,
         search: search.value,
         sort: sortBy.value === 'default' ? '' : sortBy.value,
-      })
+      }, store.papers)
       papers.value = result.items
       total.value = result.total
       totalPages.value = result.totalPages
@@ -128,9 +129,23 @@ export function usePaginatedPapers() {
     visiblePages.value = pages
   })
 
+  // Re-fetch when conference changes
+  watch(() => store.papers, () => {
+    updateFilterOptions()
+    // Reset filters when conference changes
+    category.value = ''
+    subcategory.value = ''
+    venue.value = ''
+    search.value = ''
+    sortBy.value = 'default'
+    page.value = 1
+    fetchPage()
+  })
+
   onMounted(async () => {
     syncFromUrl()
-    await Promise.all([loadFilters(), fetchPage()])
+    updateFilterOptions()
+    await fetchPage()
   })
 
   return {

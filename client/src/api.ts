@@ -47,8 +47,8 @@ async function loadFilters(): Promise<FilterOptions> {
 }
 
 // ===== 分页查询（客户端筛选 + 分页） =====
-export async function queryPapers(params: QueryParams): Promise<PaginatedResult> {
-  let data = await loadAllPapers()
+export async function queryPapers(params: QueryParams, sourceData?: Paper[]): Promise<PaginatedResult> {
+  let data = sourceData || await loadAllPapers()
 
   // 筛选
   if (params.category) data = data.filter(p => p.category === params.category)
@@ -85,6 +85,23 @@ export async function queryPapers(params: QueryParams): Promise<PaginatedResult>
 
 export async function fetchFilterOptions(): Promise<FilterOptions> {
   return loadFilters()
+}
+
+export function computeFilterOptions(papers: Paper[]): FilterOptions {
+  const categories: Record<string, number> = {}
+  const subcategories: Record<string, number> = {}
+  const catSubMap: Record<string, Record<string, number>> = {}
+
+  for (const p of papers) {
+    const cat = p.category || '其他'
+    const sub = p.subcategory || '其他'
+    categories[cat] = (categories[cat] || 0) + 1
+    subcategories[sub] = (subcategories[sub] || 0) + 1
+    if (!catSubMap[cat]) catSubMap[cat] = {}
+    catSubMap[cat][sub] = (catSubMap[cat][sub] || 0) + 1
+  }
+
+  return { categories, subcategories, catSubMap, total: papers.length }
 }
 
 // ===== 论文列表（全量，用于其他页面） =====
