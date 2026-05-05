@@ -190,7 +190,7 @@ function main() {
   console.log(`数据来源: ${REPORTS_DIR}`);
   console.log(`静态文件: ${SITE_DIR}`);
   console.log('优化: 内存缓存 + Gzip压缩 + HTTP缓存 + 懒加载');
-  console.log('外部会议: ICML, EMNLP, NeurIPS (按需获取)');
+  console.log('外部会议: ACL, ICML, ICLR, EMNLP, NeurIPS (按需获取)');
   console.log('修改 reports/*.md 后刷新浏览器即可看到更新');
   console.log('按 Ctrl+C 停止');
   console.log('='.repeat(50));

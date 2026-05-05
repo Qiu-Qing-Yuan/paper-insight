@@ -56,11 +56,13 @@ async function fetchICML(year = 2024, onProgress) {
 
     for (const note of notes) {
       const c = note.content || {};
+      const rawVenue = (c.venue && c.venue.value) || '';
+      const venueType = rawVenue.toLowerCase().includes('workshop') ? 'Workshop' : '主会';
       papers.push({
         id: note.id || '',
         title: (c.title && c.title.value) || '',
         authors: (c.authors && c.authors.value) || [],
-        venue: (c.venue && c.venue.value) || `ICML ${year}`,
+        venue: venueType,
         abstract_en: (c.abstract && c.abstract.value) || '',
         abstract_zh: '',
         pdf_url: (c.pdf && c.pdf.value) || '',
@@ -78,21 +80,16 @@ async function fetchICML(year = 2024, onProgress) {
   return papers;
 }
 
-// ===== EMNLP via ACL Anthology =====
+// ===== ACL Anthology shared helper =====
 
-async function fetchEMNLP(year = 2024, onProgress) {
-  // ACL Anthology has volume pages listing all papers
-  // Pattern: https://aclanthology.org/volumes/2024.emnlp-main/
-  const volumes = [
-    `${year}.emnlp-main`,
-    `${year}.findings-emnlp`,
-  ];
-
+async function parseAnthologyVolumes(year, volumes, source, onProgress) {
   const papers = [];
+  // Matches IDs like: 2023.acl-long.4, 2023.findings-acl.3, 2024.emnlp-main.42
+  const linkRegex = /href=(?:\/)?(\d{4}\.[a-z]+(?:-[a-z]+)*\.\d+)[\/">][\s\S]*?>([\s\S]*?)<\/a>/g;
 
-  for (const vol of volumes) {
+  for (const { vol, venueType } of volumes) {
     const volUrl = `https://aclanthology.org/volumes/${vol}/`;
-    if (onProgress) onProgress(papers.length, 0, `EMNLP ${year}: 正在获取 ${vol}...`);
+    if (onProgress) onProgress(papers.length, 0, `${source} ${year}: 正在获取 ${vol}...`);
 
     let html;
     try {
@@ -101,30 +98,52 @@ async function fetchEMNLP(year = 2024, onProgress) {
       continue;
     }
 
-    // Extract titles directly from volume page (much faster than fetching each paper)
-    const linkRegex = /href=(?:\/)?(\d{4}\.[a-z]+-[a-z]+\.\d+)\/>([\s\S]*?)<\/a>/g;
     let match;
     while ((match = linkRegex.exec(html)) !== null) {
       const id = match[1];
       if (id.endsWith('.0')) continue;
       const title = match[2].replace(/<[^>]+>/g, '').trim();
-      if (title) {
+      if (title && title.length > 2) {
         papers.push({
           id,
           title,
           authors: [],
-          venue: `EMNLP ${year}`,
+          venue: venueType,
           abstract_en: '',
           abstract_zh: '',
           pdf_url: `https://aclanthology.org/${id}.pdf`,
-          source: 'EMNLP',
+          source,
           year,
         });
       }
     }
   }
 
+  return papers;
+}
+
+// ===== EMNLP via ACL Anthology =====
+
+async function fetchEMNLP(year = 2024, onProgress) {
+  const volumes = [
+    { vol: `${year}.emnlp-main`, venueType: '主会' },
+    { vol: `${year}.findings-emnlp`, venueType: 'Findings' },
+  ];
+  const papers = parseAnthologyVolumes(year, volumes, 'EMNLP', onProgress);
   if (onProgress) onProgress(papers.length, papers.length, `EMNLP ${year}: 完成, 共 ${papers.length} 篇`);
+  return papers;
+}
+
+// ===== ACL via ACL Anthology =====
+
+async function fetchACL(year = 2023, onProgress) {
+  const volumes = [
+    { vol: `${year}.acl-long`, venueType: '主会' },
+    { vol: `${year}.acl-short`, venueType: '主会' },
+    { vol: `${year}.findings-acl`, venueType: 'Findings' },
+  ];
+  const papers = parseAnthologyVolumes(year, volumes, 'ACL', onProgress);
+  if (onProgress) onProgress(papers.length, papers.length, `ACL ${year}: 完成, 共 ${papers.length} 篇`);
   return papers;
 }
 
@@ -163,14 +182,18 @@ function parseAnthologyPage(html, id, year) {
   };
 }
 
-// ===== ICLR via OpenReview API v2 =====
+// ===== OpenReview helpers =====
 
-async function fetchICLR(year = 2024, onProgress) {
+// Extract field value from OpenReview content (handles both v1 and v2 formats)
+function fieldValue(c, key) {
+  const v = c[key];
+  if (!v) return '';
+  return typeof v === 'object' && v.value !== undefined ? v.value : v;
+}
+
+// Fetch papers from OpenReview (v1 or v2 API)
+async function fetchOpenReviewPapers(invitations, baseUrl, source, year, onProgress) {
   const papers = [];
-  const invitations = [
-    `ICLR.cc/${year}/Conference/-/Submission`,
-    `ICLR.cc/${year}/Conference/-/Poster`,
-  ];
 
   for (const invitation of invitations) {
     let offset = 0;
@@ -178,15 +201,15 @@ async function fetchICLR(year = 2024, onProgress) {
     let totalCount = null;
 
     while (true) {
-      const url = `https://api2.openreview.net/notes?invitation=${encodeURIComponent(invitation)}&limit=${limit}&offset=${offset}`;
-      if (onProgress) onProgress(papers.length, totalCount || 0, `ICLR ${year}: 正在获取 (offset=${offset})...`);
+      const url = `${baseUrl}/notes?invitation=${encodeURIComponent(invitation)}&limit=${limit}&offset=${offset}`;
+      if (onProgress) onProgress(papers.length, totalCount || 0, `${source} ${year}: 正在获取 (offset=${offset})...`);
 
       let data;
       try {
         const raw = await fetchUrl(url);
         data = JSON.parse(raw);
       } catch (e) {
-        if (onProgress) onProgress(papers.length, papers.length, `ICLR ${year}: 请求失败 - ${e.message}`);
+        if (onProgress) onProgress(papers.length, papers.length, `${source} ${year}: 请求失败 - ${e.message}`);
         break;
       }
 
@@ -197,15 +220,17 @@ async function fetchICLR(year = 2024, onProgress) {
       for (const note of notes) {
         const c = note.content || {};
         if (papers.some(p => p.id === note.id)) continue;
+        const rawVenue = fieldValue(c, 'venue');
+        const venueType = rawVenue.toLowerCase().includes('workshop') ? 'Workshop' : '主会';
         papers.push({
           id: note.id || '',
-          title: (c.title && c.title.value) || '',
-          authors: (c.authors && c.authors.value) || [],
-          venue: (c.venue && c.venue.value) || `ICLR ${year}`,
-          abstract_en: (c.abstract && c.abstract.value) || '',
+          title: fieldValue(c, 'title'),
+          authors: fieldValue(c, 'authors') || [],
+          venue: venueType,
+          abstract_en: fieldValue(c, 'abstract'),
           abstract_zh: '',
-          pdf_url: (c.pdf && c.pdf.value) || '',
-          source: 'ICLR',
+          pdf_url: fieldValue(c, 'pdf'),
+          source,
           year,
         });
       }
@@ -216,6 +241,30 @@ async function fetchICLR(year = 2024, onProgress) {
     }
 
     if (papers.length > 0) break;
+  }
+
+  return papers;
+}
+
+// ===== ICLR via OpenReview =====
+
+async function fetchICLR(year = 2024, onProgress) {
+  let papers;
+
+  if (year <= 2023) {
+    // API v1 for older conferences
+    papers = await fetchOpenReviewPapers(
+      [`ICLR.cc/${year}/Conference/-/Blind_Submission`],
+      'https://api.openreview.net',
+      'ICLR', year, onProgress
+    );
+  } else {
+    // API v2 for newer conferences
+    papers = await fetchOpenReviewPapers(
+      [`ICLR.cc/${year}/Conference/-/Submission`, `ICLR.cc/${year}/Conference/-/Poster`],
+      'https://api2.openreview.net',
+      'ICLR', year, onProgress
+    );
   }
 
   if (onProgress) onProgress(papers.length, papers.length, `ICLR ${year}: 完成, 共 ${papers.length} 篇`);
@@ -258,11 +307,13 @@ async function fetchNeurIPS(year = 2024, onProgress) {
         const c = note.content || {};
         // Avoid duplicates
         if (papers.some(p => p.id === note.id)) continue;
+        const rawVenue = (c.venue && c.venue.value) || '';
+        const venueType = rawVenue.toLowerCase().includes('workshop') ? 'Workshop' : '主会';
         papers.push({
           id: note.id || '',
           title: (c.title && c.title.value) || '',
           authors: (c.authors && c.authors.value) || [],
-          venue: (c.venue && c.venue.value) || `NeurIPS ${year}`,
+          venue: venueType,
           abstract_en: (c.abstract && c.abstract.value) || '',
           abstract_zh: '',
           pdf_url: (c.pdf && c.pdf.value) || '',
@@ -351,7 +402,7 @@ function parseNeurIPSPage(html, hash, year) {
     id: `neurips-${year}-${hash}`,
     title,
     authors,
-    venue: `NeurIPS ${year}`,
+    venue: '主会',
     abstract_en,
     abstract_zh: '',
     pdf_url: `https://proceedings.neurips.cc/paper_files/paper/${year}/hash/${hash}-Paper-Conference.pdf`,
@@ -363,6 +414,7 @@ function parseNeurIPSPage(html, hash, year) {
 // ===== Main export =====
 
 const FETCHERS = {
+  ACL: fetchACL,
   ICML: fetchICML,
   ICLR: fetchICLR,
   EMNLP: fetchEMNLP,

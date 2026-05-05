@@ -54,6 +54,7 @@ export async function queryPapers(params: QueryParams): Promise<PaginatedResult>
   if (params.subcategory) data = data.filter(p => p.subcategory === params.subcategory)
   if (params.venue) {
     if (params.venue === '主会') data = data.filter(p => p.venue?.startsWith('主会'))
+    else if (params.venue === 'Workshop') data = data.filter(p => p.venue?.startsWith('Workshop'))
     else data = data.filter(p => p.venue === params.venue)
   }
   if (params.search) {

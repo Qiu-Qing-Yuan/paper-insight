@@ -1,10 +1,19 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { usePaginatedPapers } from '../composables/usePaginatedPapers'
 import { usePapersStore } from '../stores/papers'
 import { scholarUrl } from '../utils'
 
 const store = usePapersStore()
+
+const venueOptions = computed(() => {
+  const opts: { value: string; label: string }[] = []
+  if (store.mainCount > 0) opts.push({ value: '主会', label: `主会 (${store.mainCount})` })
+  if (store.findingsCount > 0) opts.push({ value: 'Findings', label: `Findings (${store.findingsCount})` })
+  if (store.workshopCount > 0) opts.push({ value: 'Workshop', label: `Workshop (${store.workshopCount})` })
+  return opts
+})
+
 const {
   category, subcategory, venue, search, sortBy,
   page, total, totalPages, loading, papers,
@@ -53,13 +62,11 @@ function scrollTopAndGo(p: number) {
             <option v-for="(count, s) in (filterOptions?.subcategories || {})" :key="s" :value="s">{{ s }} ({{ count }})</option>
           </select>
         </div>
-        <div class="filter-group">
+        <div class="filter-group" v-if="venueOptions.length > 0">
           <label>会议类别</label>
           <select v-model="venue" @change="applyFilter">
             <option value="">全部类别</option>
-            <option value="主会">主会</option>
-            <option value="Findings">Findings</option>
-            <option value="Workshop">Workshop</option>
+            <option v-for="opt in venueOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
           </select>
         </div>
         <div class="filter-group">

@@ -19,12 +19,18 @@ if (!fs.existsSync(OUT_DIR)) {
 
 // 要获取的外部会议
 const EXTERNAL_CONFERENCES = [
+  { conf: 'ACL', year: 2023 },
+  { conf: 'ACL', year: 2024 },
+  { conf: 'ICML', year: 2023 },
   { conf: 'ICML', year: 2024 },
   { conf: 'ICML', year: 2025 },
+  { conf: 'ICLR', year: 2023 },
   { conf: 'ICLR', year: 2024 },
   { conf: 'ICLR', year: 2025 },
+  { conf: 'NeurIPS', year: 2023 },
   { conf: 'NeurIPS', year: 2024 },
   { conf: 'NeurIPS', year: 2025 },
+  { conf: 'EMNLP', year: 2023 },
   { conf: 'EMNLP', year: 2024 },
   { conf: 'EMNLP', year: 2025 },
 ];
@@ -128,33 +134,46 @@ async function main() {
   console.log('\n保存会议列表元数据...');
   const conferencesMeta = [
     {
-      id: 'ICML', name: 'ICML', years: [2024, 2025],
+      id: 'ACL', name: 'ACL', years: [2023, 2024, 2025],
+      description: 'Annual Meeting of the Association for Computational Linguistics',
+      entries: [
+        { year: 2023, key: 'ACL-2023', paperCount: results['ACL-2023'] || 0, status: 'ready' },
+        { year: 2024, key: 'ACL-2024', paperCount: results['ACL-2024'] || 0, status: 'ready' },
+        { year: 2025, key: 'ACL-2025', paperCount: papers.length, status: 'ready' },
+      ]
+    },
+    {
+      id: 'ICML', name: 'ICML', years: [2023, 2024, 2025],
       description: 'International Conference on Machine Learning',
       entries: [
+        { year: 2023, key: 'ICML-2023', paperCount: results['ICML-2023'] || 0, status: 'ready' },
         { year: 2024, key: 'ICML-2024', paperCount: results['ICML-2024'] || 0, status: 'ready' },
         { year: 2025, key: 'ICML-2025', paperCount: results['ICML-2025'] || 0, status: 'ready' },
       ]
     },
     {
-      id: 'ICLR', name: 'ICLR', years: [2024, 2025],
+      id: 'ICLR', name: 'ICLR', years: [2023, 2024, 2025],
       description: 'International Conference on Learning Representations',
       entries: [
+        { year: 2023, key: 'ICLR-2023', paperCount: results['ICLR-2023'] || 0, status: 'ready' },
         { year: 2024, key: 'ICLR-2024', paperCount: results['ICLR-2024'] || 0, status: 'ready' },
         { year: 2025, key: 'ICLR-2025', paperCount: results['ICLR-2025'] || 0, status: 'ready' },
       ]
     },
     {
-      id: 'EMNLP', name: 'EMNLP', years: [2024, 2025],
+      id: 'EMNLP', name: 'EMNLP', years: [2023, 2024, 2025],
       description: 'Empirical Methods in Natural Language Processing',
       entries: [
+        { year: 2023, key: 'EMNLP-2023', paperCount: results['EMNLP-2023'] || 0, status: 'ready' },
         { year: 2024, key: 'EMNLP-2024', paperCount: results['EMNLP-2024'] || 0, status: 'ready' },
         { year: 2025, key: 'EMNLP-2025', paperCount: results['EMNLP-2025'] || 0, status: 'ready' },
       ]
     },
     {
-      id: 'NeurIPS', name: 'NeurIPS', years: [2024, 2025],
+      id: 'NeurIPS', name: 'NeurIPS', years: [2023, 2024, 2025],
       description: 'Neural Information Processing Systems',
       entries: [
+        { year: 2023, key: 'NeurIPS-2023', paperCount: results['NeurIPS-2023'] || 0, status: 'ready' },
         { year: 2024, key: 'NeurIPS-2024', paperCount: results['NeurIPS-2024'] || 0, status: 'ready' },
         { year: 2025, key: 'NeurIPS-2025', paperCount: results['NeurIPS-2025'] || 0, status: 'ready' },
       ]
@@ -165,7 +184,7 @@ async function main() {
 
   // 汇总
   console.log('\n=== 导出完成 ===');
-  console.log(`  ACL 2025: ${papers.length} 篇`);
+  console.log(`  ACL 2025 (预加载): ${papers.length} 篇`);
   for (const { conf, year } of EXTERNAL_CONFERENCES) {
     console.log(`  ${conf} ${year}: ${results[`${conf}-${year}`] || 0} 篇`);
   }

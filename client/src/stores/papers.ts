@@ -17,13 +17,15 @@ export const usePapersStore = defineStore('papers', () => {
 
   // Multi-conference state
   const activeConference = ref<string>('ACL')
-  const activeConferenceKey = ref<string>('ACL')
+  const activeConferenceKey = ref<string>('ACL-2025')
   const conferences = ref<Conference[]>([])
   const externalLoading = ref(false)
 
   const mainCount = computed(() => papers.value.filter(p => p.venue?.startsWith('主会')).length)
   const findingsCount = computed(() => papers.value.filter(p => p.venue === 'Findings').length)
+  const workshopCount = computed(() => papers.value.filter(p => p.venue?.startsWith('Workshop')).length)
   const translatedCount = computed(() => papers.value.filter(p => p.abstract_zh).length)
+  const hasVenueTypes = computed(() => mainCount.value > 0 || findingsCount.value > 0 || workshopCount.value > 0)
 
   function getSubName(zhName: string): string {
     return lang.value === 'en' ? (SUBCATEGORY_EN[zhName] || zhName) : zhName
@@ -81,18 +83,16 @@ export const usePapersStore = defineStore('papers', () => {
   }
 
   async function switchConference(conference: string, year?: number) {
-    if (conference === 'ACL') {
-      activeConference.value = 'ACL'
-      activeConferenceKey.value = 'ACL'
+    activeConference.value = conference
+    activeConferenceKey.value = year ? `${conference}-${year}` : conference
+
+    if (conference === 'ACL' && (!year || year === 2025)) {
       papers.value = aclPapers.value
       buildCategories(aclPapers.value)
       return
     }
 
-    activeConference.value = conference
-    activeConferenceKey.value = year ? `${conference}-${year}` : conference
     externalLoading.value = true
-
     try {
       const data = await api.fetchExternalPapers(conference, year || 2024)
       if (data.length > 0) {
@@ -110,7 +110,7 @@ export const usePapersStore = defineStore('papers', () => {
   return {
     papers, aclPapers, categories, subcategories, catSubMap,
     lang, loading, error,
-    mainCount, findingsCount, translatedCount,
+    mainCount, findingsCount, workshopCount, translatedCount, hasVenueTypes,
     activeConference, activeConferenceKey, conferences, externalLoading,
     getSubName, getVenueClass, loadPapers,
     loadConferences, switchConference,

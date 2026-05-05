@@ -32,19 +32,36 @@ interface ConfGroup {
 const groups = computed<ConfGroup[]>(() => {
   const result: ConfGroup[] = []
 
-  result.push({
-    id: 'ACL',
-    name: 'ACL',
-    color: confColors.ACL,
-    years: [{
-      key: 'ACL',
-      year: 2025,
-      count: store.aclPapers.length || store.papers.length,
-      status: 'ready',
-    }],
-  })
+  // ACL — use conferences data if available, otherwise fallback to pre-loaded
+  const aclConf = conferences.value.find(c => c.id === 'ACL')
+  if (aclConf) {
+    result.push({
+      id: 'ACL',
+      name: 'ACL',
+      color: confColors.ACL,
+      years: aclConf.entries.map(e => ({
+        key: e.key,
+        year: e.year,
+        count: e.year === 2025 ? (store.aclPapers.length || e.paperCount) : e.paperCount,
+        status: e.status,
+      })),
+    })
+  } else {
+    result.push({
+      id: 'ACL',
+      name: 'ACL',
+      color: confColors.ACL,
+      years: [{
+        key: 'ACL-2025',
+        year: 2025,
+        count: store.aclPapers.length || store.papers.length,
+        status: 'ready',
+      }],
+    })
+  }
 
   for (const conf of conferences.value) {
+    if (conf.id === 'ACL') continue // already handled above
     result.push({
       id: conf.id,
       name: conf.name,

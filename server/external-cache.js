@@ -56,10 +56,11 @@ class ExternalCache {
   // List all available conferences and their status
   listConferences() {
     const conferences = [
-      { id: 'ICML', name: 'ICML', years: [2024, 2025], description: 'International Conference on Machine Learning' },
-      { id: 'ICLR', name: 'ICLR', years: [2024, 2025], description: 'International Conference on Learning Representations' },
-      { id: 'EMNLP', name: 'EMNLP', years: [2024, 2025], description: 'Empirical Methods in Natural Language Processing' },
-      { id: 'NeurIPS', name: 'NeurIPS', years: [2024, 2025], description: 'Neural Information Processing Systems' },
+      { id: 'ACL', name: 'ACL', years: [2023, 2024, 2025], description: 'Annual Meeting of the Association for Computational Linguistics' },
+      { id: 'ICML', name: 'ICML', years: [2023, 2024, 2025], description: 'International Conference on Machine Learning' },
+      { id: 'ICLR', name: 'ICLR', years: [2023, 2024, 2025], description: 'International Conference on Learning Representations' },
+      { id: 'EMNLP', name: 'EMNLP', years: [2023, 2024, 2025], description: 'Empirical Methods in Natural Language Processing' },
+      { id: 'NeurIPS', name: 'NeurIPS', years: [2023, 2024, 2025], description: 'Neural Information Processing Systems' },
     ];
 
     return conferences.map(conf => ({
