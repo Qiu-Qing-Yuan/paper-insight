@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import HomePage from './views/HomePage.vue'
+import OverviewPage from './views/OverviewPage.vue'
 import PapersPage from './views/PapersPage.vue'
 import PaperDetailPage from './views/PaperDetailPage.vue'
 import WordcloudPage from './views/WordcloudPage.vue'
@@ -15,6 +16,7 @@ const router = createRouter({
   linkActiveClass: 'active',
   routes: [
     { path: '/', component: HomePage },
+    { path: '/overview', component: OverviewPage },
     { path: '/papers', component: PapersPage },
     { path: '/paper/:id', component: PaperDetailPage },
     { path: '/wordcloud', component: WordcloudPage },

@@ -475,3 +475,63 @@ a.home-card{display:block;text-decoration:none;color:inherit}
 .related-item-meta{margin-top:3px;display:flex;gap:5px;align-items:center}
 
 @media(max-width:960px){.detail-page{grid-template-columns:1fr}.detail-sidebar{order:-1}}
+
+/* ===== Homepage: Conference Schedule ===== */
+.deadline-list{display:flex;flex-direction:column;gap:8px}
+.deadline-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:10px;background:var(--bg-input);border:1px solid var(--border);transition:all 0.2s}
+.deadline-item:hover{border-color:var(--border-hover);background:var(--bg-card-hover)}
+.deadline-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.deadline-conf{font-weight:700;font-size:13px;color:var(--text-bright);white-space:nowrap}
+.deadline-label{color:var(--text-tertiary);font-size:12px;flex:1}
+.deadline-date{color:var(--text-secondary);font-size:12px;font-weight:500;white-space:nowrap}
+.deadline-countdown{font-size:12px;font-weight:700;color:var(--accent-text);white-space:nowrap;padding:2px 8px;border-radius:6px;background:var(--accent-light)}
+.deadline-countdown.urgent{color:#ef4444;background:rgba(239,68,68,0.15)}
+
+.conf-filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.conf-filter-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-tertiary);background:var(--bg-card);border:1px solid var(--border);transition:all 0.2s cubic-bezier(0.4,0,0.2,1);user-select:none}
+.conf-filter-btn:hover{border-color:var(--border-hover);color:var(--text-secondary);transform:translateY(-1px)}
+.conf-filter-btn.active{background:var(--accent-light);border-color:var(--accent);color:var(--accent-text);box-shadow:0 0 12px rgba(37,99,235,0.15)}
+.conf-filter-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+.schedule-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;margin-bottom:16px}
+.schedule-card{position:relative;overflow:hidden}
+.schedule-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-card)}
+.schedule-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.schedule-conf-badge{padding:4px 12px;border-radius:8px;font-size:13px;font-weight:700;border:1px solid}
+.schedule-year{font-size:18px;font-weight:800;color:var(--text-bright)}
+.schedule-status{font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;margin-left:auto}
+.status-open{background:rgba(34,197,94,0.15);color:#22c55e}
+.status-ongoing{background:rgba(59,130,246,0.15);color:#3b82f6}
+.status-ended{background:rgba(107,114,128,0.15);color:var(--text-muted)}
+
+.schedule-full-name{font-size:12px;color:var(--text-tertiary);margin-bottom:10px;line-height:1.5}
+.schedule-meta{display:flex;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+.schedule-location,.schedule-papers{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--text-muted)}
+.schedule-location svg,.schedule-papers svg{opacity:0.6}
+
+.schedule-timeline{display:flex;flex-direction:column;gap:0;margin-bottom:14px}
+.timeline-item{display:flex;align-items:flex-start;gap:10px;position:relative;padding-bottom:12px}
+.timeline-item:last-child{padding-bottom:0}
+.timeline-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px;border:2px solid var(--border-input);background:var(--bg-card);z-index:1}
+.timeline-item.past .timeline-dot{border-color:var(--text-muted);background:var(--text-muted)}
+.timeline-item.upcoming .timeline-dot{border-color:var(--accent);background:var(--accent-light)}
+.timeline-item.open .timeline-dot{border-color:#22c55e;background:rgba(34,197,94,0.2);box-shadow:0 0 6px rgba(34,197,94,0.4)}
+.timeline-line{position:absolute;left:4px;top:13px;bottom:0;width:2px;background:var(--border)}
+.timeline-item:last-child .timeline-line{display:none}
+.timeline-item.past .timeline-line{background:var(--text-muted);opacity:0.3}
+.timeline-content{display:flex;flex-direction:column;gap:1px;min-width:0}
+.timeline-label{font-size:12px;color:var(--text-secondary);font-weight:500}
+.timeline-date{font-size:11px;color:var(--text-muted)}
+.timeline-item.past .timeline-label{color:var(--text-muted)}
+.timeline-item.past .timeline-date{color:var(--text-dim)}
+
+.schedule-link{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--accent-text);text-decoration:none;padding:5px 12px;border-radius:8px;background:var(--accent-light);border:1px solid rgba(37,99,235,0.2);transition:all 0.2s}
+.schedule-link:hover{background:rgba(37,99,235,0.2);border-color:rgba(37,99,235,0.35);transform:translateY(-1px)}
+
+@media(max-width:768px){
+  .schedule-grid{grid-template-columns:1fr}
+  .conf-filter-bar{gap:6px}
+  .conf-filter-btn{padding:6px 12px;font-size:12px}
+  .deadline-item{flex-wrap:wrap;gap:6px}
+  .deadline-label{flex-basis:100%;order:3}
+}

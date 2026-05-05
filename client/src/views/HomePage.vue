@@ -1,40 +1,290 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { usePapersStore } from '../stores/papers'
 
 const store = usePapersStore()
 
-const sortedCatSubMap = computed(() => {
-  const result: Record<string, Record<string, number>> = {}
-  Object.keys(store.catSubMap)
-    .sort((a, b) => (store.categories[b] || 0) - (store.categories[a] || 0))
-    .forEach(cat => {
-      result[cat] = store.catSubMap[cat]
-    })
+interface ScheduleEntry {
+  conf: string
+  fullName: string
+  year: number
+  color: string
+  website: string
+  dates: { label: string; date: string; status: 'past' | 'upcoming' | 'open' }[]
+  location: string
+}
+
+const schedules: ScheduleEntry[] = [
+  {
+    conf: 'ACL', fullName: 'Annual Meeting of the Association for Computational Linguistics', year: 2026,
+    color: '#22c55e', website: 'https://2026.aclweb.org/',
+    location: '待定',
+    dates: [
+      { label: 'Abstract 截稿', date: '2026-01-15', status: 'upcoming' },
+      { label: '全文截稿', date: '2026-01-22', status: 'upcoming' },
+      { label: '录用通知', date: '2026-05-01', status: 'upcoming' },
+      { label: '会议日期', date: '2026-07-12', status: 'upcoming' },
+    ]
+  },
+  {
+    conf: 'ACL', fullName: 'Annual Meeting of the Association for Computational Linguistics', year: 2025,
+    color: '#22c55e', website: 'https://2025.aclweb.org/',
+    location: 'Vienna, Austria',
+    dates: [
+      { label: 'Abstract 截稿', date: '2025-01-15', status: 'past' },
+      { label: '全文截稿', date: '2025-01-22', status: 'past' },
+      { label: '录用通知', date: '2025-05-01', status: 'past' },
+      { label: '会议日期', date: '2025-07-27', status: 'past' },
+    ]
+  },
+  {
+    conf: 'EMNLP', fullName: 'Conference on Empirical Methods in Natural Language Processing', year: 2026,
+    color: '#a855f7', website: 'https://2026.emnlp.org/',
+    location: '待定',
+    dates: [
+      { label: 'Abstract 截稿', date: '2026-06-15', status: 'upcoming' },
+      { label: '全文截稿', date: '2026-06-22', status: 'upcoming' },
+      { label: '录用通知', date: '2026-09-20', status: 'upcoming' },
+      { label: '会议日期', date: '2026-11-08', status: 'upcoming' },
+    ]
+  },
+  {
+    conf: 'EMNLP', fullName: 'Conference on Empirical Methods in Natural Language Processing', year: 2025,
+    color: '#a855f7', website: 'https://2025.emnlp.org/',
+    location: 'Suzhou, China',
+    dates: [
+      { label: 'Abstract 截稿', date: '2025-06-15', status: 'past' },
+      { label: '全文截稿', date: '2025-06-22', status: 'past' },
+      { label: '录用通知', date: '2025-09-20', status: 'upcoming' },
+      { label: '会议日期', date: '2025-11-08', status: 'upcoming' },
+    ]
+  },
+  {
+    conf: 'ICML', fullName: 'International Conference on Machine Learning', year: 2026,
+    color: '#3b82f6', website: 'https://icml.cc/Conferences/2026',
+    location: '待定',
+    dates: [
+      { label: '全文截稿', date: '2026-01-31', status: 'upcoming' },
+      { label: '录用通知', date: '2026-05-01', status: 'upcoming' },
+      { label: '会议日期', date: '2026-07-13', status: 'upcoming' },
+    ]
+  },
+  {
+    conf: 'ICML', fullName: 'International Conference on Machine Learning', year: 2025,
+    color: '#3b82f6', website: 'https://icml.cc/Conferences/2025',
+    location: 'Vancouver, Canada',
+    dates: [
+      { label: '全文截稿', date: '2025-01-31', status: 'past' },
+      { label: '录用通知', date: '2025-05-01', status: 'past' },
+      { label: '会议日期', date: '2025-07-13', status: 'upcoming' },
+    ]
+  },
+  {
+    conf: 'ICLR', fullName: 'International Conference on Learning Representations', year: 2026,
+    color: '#06b6d4', website: 'https://iclr.cc/Conferences/2026',
+    location: '待定',
+    dates: [
+      { label: '全文截稿', date: '2025-10-01', status: 'upcoming' },
+      { label: '录用通知', date: '2026-01-22', status: 'upcoming' },
+      { label: '会议日期', date: '2026-04-28', status: 'upcoming' },
+    ]
+  },
+  {
+    conf: 'ICLR', fullName: 'International Conference on Learning Representations', year: 2025,
+    color: '#06b6d4', website: 'https://iclr.cc/Conferences/2025',
+    location: 'Singapore',
+    dates: [
+      { label: '全文截稿', date: '2024-10-01', status: 'past' },
+      { label: '录用通知', date: '2025-01-22', status: 'past' },
+      { label: '会议日期', date: '2025-04-28', status: 'past' },
+    ]
+  },
+  {
+    conf: 'NeurIPS', fullName: 'Conference on Neural Information Processing Systems', year: 2025,
+    color: '#eab308', website: 'https://neurips.cc/Conferences/2025',
+    location: 'San Diego, USA',
+    dates: [
+      { label: 'Abstract 截稿', date: '2025-05-15', status: 'upcoming' },
+      { label: '全文截稿', date: '2025-05-22', status: 'upcoming' },
+      { label: '录用通知', date: '2025-09-25', status: 'upcoming' },
+      { label: '会议日期', date: '2025-12-08', status: 'upcoming' },
+    ]
+  },
+  {
+    conf: 'NeurIPS', fullName: 'Conference on Neural Information Processing Systems', year: 2026,
+    color: '#eab308', website: 'https://neurips.cc/Conferences/2026',
+    location: '待定',
+    dates: [
+      { label: 'Abstract 截稿', date: '2026-05-15', status: 'upcoming' },
+      { label: '全文截稿', date: '2026-05-22', status: 'upcoming' },
+      { label: '录用通知', date: '2026-09-25', status: 'upcoming' },
+      { label: '会议日期', date: '2026-12-07', status: 'upcoming' },
+    ]
+  },
+]
+
+const confColors: Record<string, string> = {
+  ACL: '#22c55e',
+  EMNLP: '#a855f7',
+  ICML: '#3b82f6',
+  ICLR: '#06b6d4',
+  NeurIPS: '#eab308',
+}
+
+// Group schedules by conference
+const groupedSchedules = computed(() => {
+  const groups: Record<string, ScheduleEntry[]> = {}
+  for (const s of schedules) {
+    if (!groups[s.conf]) groups[s.conf] = []
+    groups[s.conf].push(s)
+  }
+  // Sort each group by year descending
+  for (const conf of Object.keys(groups)) {
+    groups[conf].sort((a, b) => b.year - a.year)
+  }
+  return groups
+})
+
+// Upcoming deadlines (next 90 days)
+const upcomingDeadlines = computed(() => {
+  const now = new Date()
+  const result: { conf: string; year: number; label: string; date: string; daysLeft: number; color: string }[] = []
+  for (const s of schedules) {
+    for (const d of s.dates) {
+      const target = new Date(d.date)
+      const diff = Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+      if (diff > 0 && diff <= 90) {
+        result.push({ conf: s.conf, year: s.year, label: d.label, date: d.date, daysLeft: diff, color: s.color })
+      }
+    }
+  }
+  result.sort((a, b) => a.daysLeft - b.daysLeft)
   return result
 })
 
-const isACL = computed(() => store.activeConference === 'ACL')
+// Paper count for a conference
+function paperCount(conf: string, year: number): number {
+  const confData = store.conferences.find(c => c.id === conf)
+  if (!confData) return 0
+  const entry = confData.entries.find(e => e.year === year)
+  return entry?.paperCount || 0
+}
+
+function formatDate(dateStr: string): string {
+  const d = new Date(dateStr)
+  return `${d.getMonth() + 1}月${d.getDate()}日`
+}
+
+function getStatusLabel(dates: ScheduleEntry['dates']): string {
+  const now = new Date()
+  const lastDate = new Date(dates[dates.length - 1].date)
+  if (now > lastDate) return '已结束'
+  const firstDate = new Date(dates[0].date)
+  if (now < firstDate) return '征稿中'
+  return '进行中'
+}
+
+function getStatusClass(dates: ScheduleEntry['dates']): string {
+  const label = getStatusLabel(dates)
+  if (label === '征稿中') return 'status-open'
+  if (label === '进行中') return 'status-ongoing'
+  return 'status-ended'
+}
+
+const selectedConf = ref<string | null>(null)
+const filteredSchedules = computed(() => {
+  if (!selectedConf.value) return schedules
+  return schedules.filter(s => s.conf === selectedConf.value)
+})
 </script>
 
 <template>
   <div class="main">
-    <div class="stats-grid">
-      <div v-if="store.loading || store.externalLoading" v-for="i in 5" :key="i" class="card stat-skeleton" style="height:110px"></div>
-      <template v-else>
-        <div class="card stat-card stat-card-1"><div class="stat-number">{{ store.papers.length }}</div><div class="stat-label">总论文数</div></div>
-        <div class="card stat-card stat-card-2" v-if="store.hasVenueTypes"><div class="stat-number">{{ store.mainCount }}</div><div class="stat-label">主会论文</div></div>
-        <div class="card stat-card stat-card-3" v-if="store.hasVenueTypes"><div class="stat-number">{{ store.findingsCount }}</div><div class="stat-label">Findings</div></div>
-        <div class="card stat-card stat-card-4"><div class="stat-number">{{ Object.keys(store.subcategories).length }}</div><div class="stat-label">细分方向</div></div>
-        <div class="card stat-card stat-card-5" v-if="isACL"><div class="stat-number">{{ store.translatedCount }}</div><div class="stat-label">已翻译</div></div>
-      </template>
+    <!-- Upcoming deadlines banner -->
+    <div v-if="upcomingDeadlines.length > 0" class="card" style="border-left: 3px solid var(--accent-primary)">
+      <div class="section-header">
+        <div class="card-title">近期截稿提醒</div>
+        <span style="color:var(--text-muted);font-size:13px">未来 90 天内</span>
+      </div>
+      <div class="deadline-list">
+        <div v-for="d in upcomingDeadlines" :key="d.conf + d.year + d.label" class="deadline-item">
+          <span class="deadline-dot" :style="{ background: d.color }"></span>
+          <span class="deadline-conf">{{ d.conf }} {{ d.year }}</span>
+          <span class="deadline-label">{{ d.label }}</span>
+          <span class="deadline-date">{{ formatDate(d.date) }}</span>
+          <span class="deadline-countdown" :class="{ urgent: d.daysLeft <= 14 }">
+            {{ d.daysLeft <= 0 ? '今天' : d.daysLeft + ' 天后' }}
+          </span>
+        </div>
+      </div>
     </div>
 
+    <!-- Conference filter -->
+    <div class="conf-filter-bar">
+      <button class="conf-filter-btn" :class="{ active: !selectedConf }" @click="selectedConf = null">全部</button>
+      <button v-for="conf in Object.keys(groupedSchedules)" :key="conf" class="conf-filter-btn" :class="{ active: selectedConf === conf }" :style="{ '--conf-color': confColors[conf] }" @click="selectedConf = conf">
+        <span class="conf-filter-dot" :style="{ background: confColors[conf] }"></span>
+        {{ conf }}
+      </button>
+    </div>
+
+    <!-- Conference schedule cards -->
+    <div class="schedule-grid">
+      <div v-for="entry in filteredSchedules" :key="entry.conf + entry.year" class="card schedule-card">
+        <div class="schedule-header">
+          <div class="schedule-conf-badge" :style="{ background: entry.color + '20', color: entry.color, borderColor: entry.color + '40' }">
+            {{ entry.conf }}
+          </div>
+          <div class="schedule-year">{{ entry.year }}</div>
+          <span class="schedule-status" :class="getStatusClass(entry.dates)">{{ getStatusLabel(entry.dates) }}</span>
+        </div>
+
+        <div class="schedule-full-name">{{ entry.fullName }}</div>
+
+        <div class="schedule-meta">
+          <span v-if="entry.location" class="schedule-location">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            {{ entry.location }}
+          </span>
+          <span v-if="paperCount(entry.conf, entry.year) > 0" class="schedule-papers">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            {{ paperCount(entry.conf, entry.year) }} 篇论文
+          </span>
+        </div>
+
+        <div class="schedule-timeline">
+          <div v-for="(d, i) in entry.dates" :key="i" class="timeline-item" :class="{ past: d.status === 'past', upcoming: d.status === 'upcoming', open: d.status === 'open' }">
+            <div class="timeline-dot"></div>
+            <div v-if="i < entry.dates.length - 1" class="timeline-line"></div>
+            <div class="timeline-content">
+              <span class="timeline-label">{{ d.label }}</span>
+              <span class="timeline-date">{{ formatDate(d.date) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <a :href="entry.website" target="_blank" class="schedule-link">
+          官网
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Quick links -->
     <div class="card">
       <div class="section-header">
         <div class="card-title">快速导航</div>
       </div>
       <div class="home-cards">
+        <router-link to="/overview" class="home-card">
+          <div class="home-card-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
+            </svg>
+          </div>
+          <div class="home-card-title">数据总览</div>
+          <div class="home-card-desc">论文统计、细分方向概览</div>
+        </router-link>
         <router-link to="/papers" class="home-card">
           <div class="home-card-icon">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -53,33 +303,6 @@ const isACL = computed(() => store.activeConference === 'ACL')
           <div class="home-card-title">词云分析</div>
           <div class="home-card-desc">名词性关键词词云</div>
         </router-link>
-        <router-link to="/charts" class="home-card">
-          <div class="home-card-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
-            </svg>
-          </div>
-          <div class="home-card-title">统计图表</div>
-          <div class="home-card-desc">细分方向分布、热力图</div>
-        </router-link>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="section-header">
-        <div class="card-title">细分研究方向概览</div>
-      </div>
-      <div v-if="store.loading || store.externalLoading" class="loading-sm">正在加载数据...</div>
-      <div v-else>
-        <div v-for="(subs, cat) in sortedCatSubMap" :key="cat" class="cat-group">
-          <div class="cat-group-title">{{ cat }} ({{ store.categories[cat] }} 篇)</div>
-          <div class="cat-group-items">
-            <router-link v-for="(count, sub) in subs" :key="sub" :to="'/papers?sub=' + encodeURIComponent(String(sub))" class="sub-item" style="text-decoration:none">
-              <span class="sub-item-name">{{ sub }}</span>
-              <span class="sub-item-count">{{ count }}</span>
-            </router-link>
-          </div>
-        </div>
       </div>
     </div>
   </div>
