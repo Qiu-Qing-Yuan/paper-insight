@@ -124,6 +124,9 @@ async function main() {
         console.log(`  ${conf} ${year}: 无数据`);
         results[`${conf}-${year}`] = 0;
       }
+
+      // Delay between fetches to avoid Anthology rate limiting
+      await new Promise(r => setTimeout(r, 2000));
     } catch (e) {
       console.log(`  ${conf} ${year}: 获取失败 - ${e.message}`);
       results[`${conf}-${year}`] = 0;

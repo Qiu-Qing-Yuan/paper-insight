@@ -44,11 +44,8 @@ async function fetchICML(year = 2024, onProgress) {
 
 async function parseAnthologyVolumes(year, volumes, source, onProgress) {
   const papers = [];
-  // Matches IDs like: 2023.acl-long.4, 2023.findings-acl.3, 2024.emnlp-main.42
-  const linkRegex = /href=(?:\/)?(\d{4}\.[a-z]+(?:-[a-z]+)*\.\d+)[\/">][\s\S]*?>([\s\S]*?)<\/a>/g;
 
   for (const { vol, venueType } of volumes) {
-    linkRegex.lastIndex = 0;
     const volUrl = `https://aclanthology.org/volumes/${vol}/`;
     if (onProgress) onProgress(papers.length, 0, `${source} ${year}: 正在获取 ${vol}...`);
 
@@ -59,24 +56,45 @@ async function parseAnthologyVolumes(year, volumes, source, onProgress) {
       continue;
     }
 
-    let match;
-    while ((match = linkRegex.exec(html)) !== null) {
-      const id = match[1];
+    // Split by paper entry blocks
+    const entries = html.split(/<div class="d-sm-flex align-items-stretch mb-3">/);
+    for (const entry of entries) {
+      // Extract paper ID
+      const idMatch = entry.match(/href=(?:\/)?(\d{4}\.[a-z]+(?:-[a-z]+)*\.\d+)\//);
+      if (!idMatch) continue;
+      const id = idMatch[1];
       if (id.endsWith('.0')) continue;
-      const title = match[2].replace(/<[^>]+>/g, '').trim();
-      if (title && title.length > 2) {
-        papers.push({
-          id,
-          title,
-          authors: [],
-          venue: venueType,
-          abstract_en: '',
-          abstract_zh: '',
-          pdf_url: `https://aclanthology.org/${id}.pdf`,
-          source,
-          year,
-        });
+
+      // Extract title
+      const titleMatch = entry.match(/<strong><a[^>]*>([\s\S]*?)<\/a><\/strong>/);
+      const title = titleMatch ? titleMatch[1].replace(/<[^>]+>/g, '').trim() : '';
+      if (!title || title.length <= 2) continue;
+
+      // Extract authors (between </strong><br> and the next <div)
+      const authors = [];
+      const authorSection = entry.match(/<\/strong><br>([\s\S]*?)(?:<div class="card|<div class="d-sm-flex|$)/);
+      if (authorSection) {
+        for (const m of authorSection[1].matchAll(/>([^<]+)<\/a>/g)) {
+          const name = m[1].trim();
+          if (name && !name.includes('|')) authors.push(name);
+        }
       }
+
+      // Extract abstract from collapsible section
+      const abstractMatch = entry.match(/id=abstract-[^>]*>[\s\S]*?<div class="card-body[^"]*">([\s\S]*?)<\/div>/);
+      const abstract_en = abstractMatch ? abstractMatch[1].replace(/<[^>]+>/g, '').trim() : '';
+
+      papers.push({
+        id,
+        title,
+        authors,
+        venue: venueType,
+        abstract_en,
+        abstract_zh: '',
+        pdf_url: `https://aclanthology.org/${id}.pdf`,
+        source,
+        year,
+      });
     }
   }
 
