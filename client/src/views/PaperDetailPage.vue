@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import * as echarts from 'echarts'
 import { usePapersStore } from '../stores/papers'
 import { scholarUrl, generateBibtex, paperLinkUrl, anthologyUrl } from '../utils'
@@ -9,6 +9,7 @@ import * as api from '../api'
 
 const store = usePapersStore()
 const route = useRoute()
+const router = useRouter()
 
 const activeTab = ref('abstract')
 const abstractLang = ref<'en' | 'zh'>('en')
@@ -148,6 +149,10 @@ onMounted(async () => {
     abstractLang.value = 'en'
     paperNotFound.value = false
     nextTick(renderVenueChart)
+  })
+  // Navigate to papers list when conference changes (paper won't exist in new conference)
+  watch(() => store.activeConferenceKey, () => {
+    router.push('/papers')
   })
 })
 
