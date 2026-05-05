@@ -494,7 +494,7 @@ a.home-card{display:block;text-decoration:none;color:inherit}
 .conf-filter-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 
 .schedule-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;margin-bottom:16px}
-.schedule-card{position:relative;overflow:hidden}
+.schedule-card{position:relative;overflow:hidden;border-top:3px solid var(--border)}
 .schedule-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-card)}
 .schedule-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .schedule-conf-badge{padding:4px 12px;border-radius:8px;font-size:13px;font-weight:700;border:1px solid}
@@ -505,27 +505,34 @@ a.home-card{display:block;text-decoration:none;color:inherit}
 .status-ended{background:rgba(107,114,128,0.15);color:var(--text-muted)}
 
 .schedule-full-name{font-size:12px;color:var(--text-tertiary);margin-bottom:10px;line-height:1.5}
-.schedule-meta{display:flex;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+.schedule-meta{display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap}
 .schedule-location,.schedule-papers{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--text-muted)}
 .schedule-location svg,.schedule-papers svg{opacity:0.6}
+
+.next-deadline{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;border:1px solid;margin-bottom:12px}
+.next-deadline-label{font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap}
+.next-deadline-name{font-size:12px;font-weight:600;color:var(--text-secondary);flex:1}
+.next-deadline-date{font-size:12px;color:var(--text-tertiary);white-space:nowrap}
+.next-deadline-days{font-size:12px;font-weight:700;white-space:nowrap;padding:2px 8px;border-radius:6px;background:var(--accent-light)}
+.next-deadline-days.urgent{color:#ef4444;background:rgba(239,68,68,0.12)}
 
 .schedule-timeline{display:flex;flex-direction:column;gap:0;margin-bottom:14px}
 .timeline-item{display:flex;align-items:flex-start;gap:10px;position:relative;padding-bottom:12px}
 .timeline-item:last-child{padding-bottom:0}
-.timeline-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px;border:2px solid var(--border-input);background:var(--bg-card);z-index:1}
+.timeline-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px;border:2px solid var(--border-input);background:var(--bg-card);z-index:1;transition:all 0.2s}
 .timeline-item.past .timeline-dot{border-color:var(--text-muted);background:var(--text-muted)}
 .timeline-item.upcoming .timeline-dot{border-color:var(--accent);background:var(--accent-light)}
-.timeline-item.open .timeline-dot{border-color:#22c55e;background:rgba(34,197,94,0.2);box-shadow:0 0 6px rgba(34,197,94,0.4)}
 .timeline-line{position:absolute;left:4px;top:13px;bottom:0;width:2px;background:var(--border)}
 .timeline-item:last-child .timeline-line{display:none}
 .timeline-item.past .timeline-line{background:var(--text-muted);opacity:0.3}
 .timeline-content{display:flex;flex-direction:column;gap:1px;min-width:0}
 .timeline-label{font-size:12px;color:var(--text-secondary);font-weight:500}
 .timeline-date{font-size:11px;color:var(--text-muted)}
+.timeline-days{font-size:10px;font-weight:600;margin-left:2px}
 .timeline-item.past .timeline-label{color:var(--text-muted)}
 .timeline-item.past .timeline-date{color:var(--text-dim)}
 
-.schedule-link{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--accent-text);text-decoration:none;padding:5px 12px;border-radius:8px;background:var(--accent-light);border:1px solid rgba(37,99,235,0.2);transition:all 0.2s}
+.schedule-link{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--accent-text);text-decoration:none;padding:6px 14px;border-radius:8px;background:var(--accent-light);border:1px solid rgba(37,99,235,0.2);transition:all 0.2s}
 .schedule-link:hover{background:rgba(37,99,235,0.2);border-color:rgba(37,99,235,0.35);transform:translateY(-1px)}
 
 @media(max-width:768px){
@@ -534,4 +541,6 @@ a.home-card{display:block;text-decoration:none;color:inherit}
   .conf-filter-btn{padding:6px 12px;font-size:12px}
   .deadline-item{flex-wrap:wrap;gap:6px}
   .deadline-label{flex-basis:100%;order:3}
+  .next-deadline{flex-wrap:wrap;gap:4px}
+  .next-deadline-label{flex-basis:100%}
 }

@@ -23,7 +23,7 @@ const schedules: ScheduleEntry[] = [
       { label: 'Abstract 截稿', date: '2026-01-15' },
       { label: '全文截稿', date: '2026-01-22' },
       { label: '录用通知', date: '2026-05-01' },
-      { label: '会议日期', date: '2026-07-12' },
+      { label: '会议日期', date: '2026-07-27' },
     ]
   },
   {
@@ -195,6 +195,24 @@ function getTimelineStatus(dateStr: string): 'past' | 'upcoming' {
   return new Date(dateStr) < new Date() ? 'past' : 'upcoming'
 }
 
+function daysUntil(dateStr: string): number {
+  const now = new Date()
+  now.setHours(0, 0, 0, 0)
+  const target = new Date(dateStr)
+  target.setHours(0, 0, 0, 0)
+  return Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+}
+
+function nextDeadline(dates: ScheduleEntry['dates']): { label: string; date: string; days: number } | null {
+  const now = new Date()
+  for (const d of dates) {
+    if (new Date(d.date) >= now) {
+      return { label: d.label, date: d.date, days: daysUntil(d.date) }
+    }
+  }
+  return null
+}
+
 const selectedConf = ref<string | null>(null)
 const filteredSchedules = computed(() => {
   if (!selectedConf.value) return schedules
@@ -205,7 +223,7 @@ const filteredSchedules = computed(() => {
 <template>
   <div class="main">
     <!-- Upcoming deadlines banner -->
-    <div v-if="upcomingDeadlines.length > 0" class="card" style="border-left: 3px solid var(--accent-primary)">
+    <div v-if="upcomingDeadlines.length > 0" class="card deadline-banner" style="border-left: 3px solid var(--accent)">
       <div class="section-header">
         <div class="card-title">近期截稿提醒</div>
         <span style="color:var(--text-muted);font-size:13px">未来 90 天内</span>
@@ -226,7 +244,7 @@ const filteredSchedules = computed(() => {
     <!-- Conference filter -->
     <div class="conf-filter-bar">
       <button class="conf-filter-btn" :class="{ active: !selectedConf }" @click="selectedConf = null">全部</button>
-      <button v-for="conf in Object.keys(groupedSchedules)" :key="conf" class="conf-filter-btn" :class="{ active: selectedConf === conf }" :style="{ '--conf-color': confColors[conf] }" @click="selectedConf = conf">
+      <button v-for="conf in Object.keys(groupedSchedules)" :key="conf" class="conf-filter-btn" :class="{ active: selectedConf === conf }" @click="selectedConf = conf">
         <span class="conf-filter-dot" :style="{ background: confColors[conf] }"></span>
         {{ conf }}
       </button>
@@ -234,9 +252,9 @@ const filteredSchedules = computed(() => {
 
     <!-- Conference schedule cards -->
     <div class="schedule-grid">
-      <div v-for="entry in filteredSchedules" :key="entry.conf + entry.year" class="card schedule-card">
+      <div v-for="entry in filteredSchedules" :key="entry.conf + entry.year" class="card schedule-card" :style="{ borderTopColor: entry.color }">
         <div class="schedule-header">
-          <div class="schedule-conf-badge" :style="{ background: entry.color + '20', color: entry.color, borderColor: entry.color + '40' }">
+          <div class="schedule-conf-badge" :style="{ background: entry.color + '18', color: entry.color, borderColor: entry.color + '30' }">
             {{ entry.conf }}
           </div>
           <div class="schedule-year">{{ entry.year }}</div>
@@ -256,19 +274,34 @@ const filteredSchedules = computed(() => {
           </span>
         </div>
 
+        <!-- Next deadline highlight -->
+        <div v-if="nextDeadline(entry.dates)" class="next-deadline" :style="{ borderColor: entry.color + '40', background: entry.color + '08' }">
+          <span class="next-deadline-label">下一个节点</span>
+          <span class="next-deadline-name">{{ nextDeadline(entry.dates)!.label }}</span>
+          <span class="next-deadline-date">{{ formatDate(nextDeadline(entry.dates)!.date) }}</span>
+          <span class="next-deadline-days" :class="{ urgent: nextDeadline(entry.dates)!.days <= 14 }" :style="nextDeadline(entry.dates)!.days > 14 ? { color: entry.color } : {}">
+            {{ nextDeadline(entry.dates)!.days <= 0 ? '今天' : nextDeadline(entry.dates)!.days + ' 天后' }}
+          </span>
+        </div>
+
         <div class="schedule-timeline">
           <div v-for="(d, i) in entry.dates" :key="i" class="timeline-item" :class="getTimelineStatus(d.date)">
-            <div class="timeline-dot"></div>
+            <div class="timeline-dot" :style="getTimelineStatus(d.date) === 'upcoming' ? { borderColor: entry.color, background: entry.color + '20' } : {}"></div>
             <div v-if="i < entry.dates.length - 1" class="timeline-line"></div>
             <div class="timeline-content">
               <span class="timeline-label">{{ d.label }}</span>
-              <span class="timeline-date">{{ formatDate(d.date) }}</span>
+              <span class="timeline-date">
+                {{ formatDate(d.date) }}
+                <template v-if="getTimelineStatus(d.date) === 'upcoming'">
+                  <span class="timeline-days" :style="{ color: entry.color }">({{ daysUntil(d.date) }}天)</span>
+                </template>
+              </span>
             </div>
           </div>
         </div>
 
         <a :href="entry.website" target="_blank" class="schedule-link">
-          官网
+          访问官网
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
         </a>
       </div>
