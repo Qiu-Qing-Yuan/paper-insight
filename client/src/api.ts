@@ -1,4 +1,5 @@
 import type { Paper, Conference } from './types'
+import { extractNounKeywords } from './utils'
 
 export interface PaginatedResult {
   items: Paper[]
@@ -92,6 +93,12 @@ export async function fetchPapers(): Promise<Paper[]> {
 }
 
 export async function fetchKeywords(lang: string, sub?: string): Promise<[string, number][]> {
+  if (sub) {
+    // Client-side extraction for subcategory filtering
+    const papers = await loadAllPapers()
+    const filtered = papers.filter(p => p.subcategory === sub)
+    return extractNounKeywords(filtered, lang as 'en' | 'zh')
+  }
   const r = await fetch(`/data/keywords-${lang}.json`)
   return r.json()
 }

@@ -3,7 +3,7 @@ import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import * as echarts from 'echarts'
 import { usePapersStore } from '../stores/papers'
-import { scholarUrl } from '../utils'
+import { scholarUrl, generateBibtex, paperLinkUrl, anthologyUrl } from '../utils'
 import { getChartColors } from '../composables/useTheme'
 import * as api from '../api'
 
@@ -50,7 +50,7 @@ async function ensurePapersLoaded() {
     }
 
     // Search across all external conferences without changing active view
-    const searchConfs: Array<[string, number[]]> = [['EMNLP', [2024, 2025]], ['NeurIPS', [2024]], ['ICML', [2024]], ['ICLR', [2024, 2025]]]
+    const searchConfs: Array<[string, number[]]> = [['EMNLP', [2023, 2024, 2025]], ['NeurIPS', [2023, 2024, 2025]], ['ICML', [2023, 2024, 2025]], ['ICLR', [2023, 2024, 2025]]]
     for (const [conf, years] of searchConfs) {
       for (const year of years) {
         const data = await api.fetchExternalPapers(conf, year)
@@ -78,16 +78,7 @@ const relatedPapers = computed(() => {
 
 const bibtex = computed(() => {
   if (!paper.value) return ''
-  const p = paper.value
-  const authors = (p.authors || []).join(' and ')
-  const key = (p.authors?.[0]?.split(' ').pop()?.toLowerCase() || 'unknown') + p.id.replace(/[^a-z0-9]/gi, '')
-  return `@inproceedings{${key},
-  title     = {${p.title}},
-  author    = {${authors}},
-  booktitle = {Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (ACL 2025)},
-  year      = {2025},
-  url       = {https://aclanthology.org/${p.id}/}
-}`
+  return generateBibtex(paper.value)
 })
 
 function avatarColor(i: number) { return avatarColors[i % avatarColors.length] }
@@ -186,7 +177,7 @@ onUnmounted(() => {
           <div class="detail-main-meta">
             <span class="venue-badge" :class="store.getVenueClass(paper.venue)" style="font-size:12px;padding:4px 12px">{{ paper.venue }}</span>
             <span class="id-text">ID: {{ paper.id }}</span>
-            <a :href="'https://aclanthology.org/' + paper.id + '/'" target="_blank" class="pdf-link">PDF</a>
+            <a v-if="paperLinkUrl(paper)" :href="paperLinkUrl(paper)" target="_blank" class="pdf-link">PDF</a>
             <a :href="scholarUrl(paper.title)" target="_blank" class="scholar-link" style="font-size:12px;padding:4px 12px">Google Scholar</a>
           </div>
 
@@ -218,7 +209,8 @@ onUnmounted(() => {
               <div class="detail-info-label">一级方向</div><div class="detail-info-value">{{ paper.category }}</div>
               <div class="detail-info-label">细分方向</div><div class="detail-info-value">{{ paper.subcategory }}</div>
               <div class="detail-info-label">作者</div><div class="detail-info-value">{{ (paper.authors||[]).join(', ') }}</div>
-              <div class="detail-info-label">ACL链接</div><div class="detail-info-value"><a :href="'https://aclanthology.org/' + paper.id + '/'" target="_blank" style="color:#2563eb;text-decoration:none">https://aclanthology.org/{{ paper.id }}/</a></div>
+              <div v-if="anthologyUrl(paper)" class="detail-info-label">ACL链接</div><div v-if="anthologyUrl(paper)" class="detail-info-value"><a :href="anthologyUrl(paper)" target="_blank" style="color:#2563eb;text-decoration:none">{{ anthologyUrl(paper) }}</a></div>
+              <div v-if="paper.pdf_url" class="detail-info-label">PDF链接</div><div v-if="paper.pdf_url" class="detail-info-value"><a :href="paper.pdf_url" target="_blank" style="color:#2563eb;text-decoration:none">{{ paper.pdf_url }}</a></div>
               <div class="detail-info-label">Google Scholar</div><div class="detail-info-value"><a :href="scholarUrl(paper.title)" target="_blank" style="color:#3b82f6;text-decoration:none">在 Google Scholar 中搜索</a></div>
             </div>
           </div>

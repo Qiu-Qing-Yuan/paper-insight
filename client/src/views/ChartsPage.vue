@@ -3,7 +3,7 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import * as echarts from 'echarts'
 import { usePapersStore } from '../stores/papers'
 import { usePagination } from '../composables/usePagination'
-import { scholarUrl } from '../utils'
+import { scholarUrl, anthologyUrl } from '../utils'
 import { getChartColors } from '../composables/useTheme'
 
 const store = usePapersStore()
@@ -43,7 +43,12 @@ const topMainRatio = computed(() => {
   }).filter(r => r.count >= 15).sort((a, b) => b.ratio - a.ratio).slice(0, 10)
 })
 
-function refreshAll() { store.loadPapers() }
+function refreshAll() {
+  renderSubcategoryChart()
+  renderVenueChart()
+  renderMainRatioChart()
+  renderHeatmapChart()
+}
 
 function showSubcategoryPapers(subcategory: string) {
   selectedLabel.value = subcategory
@@ -298,7 +303,10 @@ onUnmounted(() => {
           <div style="margin-top:12px;color:rgba(255,255,255,0.6);font-size:14px"><strong>作者:</strong> {{ (detailPaper.authors||[]).join(', ') }}</div>
           <div style="margin-top:8px;color:rgba(255,255,255,0.6);font-size:14px"><strong>方向:</strong> {{ detailPaper.category }} → {{ detailPaper.subcategory }}</div>
           <div style="margin-top:8px;color:rgba(255,255,255,0.6);font-size:14px"><strong>论文ID:</strong> {{ detailPaper.id }}</div>
-          <div style="margin-top:12px"><a :href="'https://aclanthology.org/' + detailPaper.id + '/'" target="_blank" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-size:13px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> 在 ACL Anthology 中查看</a></div>
+          <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+            <a v-if="anthologyUrl(detailPaper)" :href="anthologyUrl(detailPaper)" target="_blank" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-size:13px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> 在 ACL Anthology 中查看</a>
+            <a v-if="detailPaper.pdf_url" :href="detailPaper.pdf_url" target="_blank" class="btn btn-secondary" style="display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-size:13px">查看 PDF</a>
+          </div>
         </div>
         <div class="card"><div class="abstract-section"><div class="abstract-label"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> 英文摘要</div><div class="abstract-content">{{ detailPaper.abstract_en || '暂无' }}</div></div></div>
         <div class="card"><div class="abstract-section"><div class="abstract-label"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> 中文摘要</div><div class="abstract-content">{{ detailPaper.abstract_zh || '暂无翻译' }}</div></div></div>
