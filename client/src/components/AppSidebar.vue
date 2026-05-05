@@ -39,11 +39,12 @@ const navItems = [
   { icon: 'chart', label: '统计图表', path: '/charts' },
 ]
 
+const emit = defineEmits<{ feedback: [] }>()
+
 const toolItems = [
   { icon: 'user', label: '用户中心', path: '/user' },
   { icon: 'star', label: '收藏', path: '/favorites' },
   { icon: 'clock', label: '历史', path: '/history' },
-  { icon: 'message', label: '反馈', path: '/feedback' },
 ]
 
 function navigateTo(path: string) {
@@ -135,12 +136,17 @@ function isActive(path: string) {
             <svg v-else-if="item.icon === 'clock'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
             </svg>
-            <svg v-else-if="item.icon === 'message'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-            </svg>
           </div>
           <span class="item-label">{{ item.label }}</span>
         </router-link>
+        <div class="sidebar-item" @click="emit('feedback')" title="反馈">
+          <div class="item-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+            </svg>
+          </div>
+          <span class="item-label">反馈</span>
+        </div>
       </div>
     </nav>
 

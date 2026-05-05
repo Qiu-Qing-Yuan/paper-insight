@@ -9,7 +9,6 @@ import UserCenterPage from './views/UserCenterPage.vue'
 import HistoryPage from './views/HistoryPage.vue'
 import FavoritesPage from './views/FavoritesPage.vue'
 import ToolsPage from './views/ToolsPage.vue'
-import FeedbackPage from './views/FeedbackPage.vue'
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -25,7 +24,6 @@ const router = createRouter({
     { path: '/history', component: HistoryPage },
     { path: '/favorites', component: FavoritesPage },
     { path: '/tools', component: ToolsPage },
-    { path: '/feedback', component: FeedbackPage },
   ]
 })
 

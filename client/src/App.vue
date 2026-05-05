@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { usePapersStore } from './stores/papers'
 import AppSidebar from './components/AppSidebar.vue'
 import ConferenceBar from './components/ConferenceBar.vue'
+import FeedbackModal from './components/FeedbackModal.vue'
 
 const store = usePapersStore()
 const loading = computed(() => store.loading)
 const externalLoading = computed(() => store.externalLoading)
+const feedbackOpen = ref(false)
 
 onMounted(() => {
   store.loadPapers()
@@ -16,7 +18,7 @@ onMounted(() => {
 
 <template>
   <div class="app-layout">
-    <AppSidebar />
+    <AppSidebar @feedback="feedbackOpen = true" />
     <main class="app-main">
       <div class="conf-bar-wrap">
         <ConferenceBar />
@@ -38,4 +40,5 @@ onMounted(() => {
       <div class="loading-sm">正在加载会议数据...</div>
     </div>
   </Transition>
+  <FeedbackModal :visible="feedbackOpen" @close="feedbackOpen = false" />
 </template>
