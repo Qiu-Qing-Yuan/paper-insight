@@ -18,12 +18,13 @@ const schedules: ScheduleEntry[] = [
   {
     conf: 'ACL', fullName: 'Annual Meeting of the Association for Computational Linguistics', year: 2026,
     color: '#22c55e', website: 'https://2026.aclweb.org/',
-    location: '待定',
+    location: 'San Diego, USA',
     dates: [
-      { label: 'Abstract 截稿', date: '2026-01-15' },
-      { label: '全文截稿', date: '2026-01-22' },
-      { label: '录用通知', date: '2026-05-01' },
-      { label: '会议日期', date: '2026-07-27' },
+      { label: 'ARR 截稿', date: '2026-01-05' },
+      { label: 'Commitment 截止', date: '2026-03-14' },
+      { label: '录用通知', date: '2026-04-04' },
+      { label: 'Camera-Ready', date: '2026-04-19' },
+      { label: '会议日期', date: '2026-07-02' },
     ]
   },
   {
@@ -31,9 +32,10 @@ const schedules: ScheduleEntry[] = [
     color: '#22c55e', website: 'https://2025.aclweb.org/',
     location: 'Vienna, Austria',
     dates: [
-      { label: 'Abstract 截稿', date: '2025-01-15' },
-      { label: '全文截稿', date: '2025-01-22' },
-      { label: '录用通知', date: '2025-05-01' },
+      { label: 'ARR 截稿', date: '2025-02-15' },
+      { label: 'Commitment 截止', date: '2025-04-20' },
+      { label: '录用通知', date: '2025-05-15' },
+      { label: 'Camera-Ready', date: '2025-05-30' },
       { label: '会议日期', date: '2025-07-27' },
     ]
   },
@@ -42,10 +44,11 @@ const schedules: ScheduleEntry[] = [
     color: '#a855f7', website: 'https://2026.emnlp.org/',
     location: '待定',
     dates: [
-      { label: 'Abstract 截稿', date: '2026-06-15' },
-      { label: '全文截稿', date: '2026-06-22' },
-      { label: '录用通知', date: '2026-09-20' },
-      { label: '会议日期', date: '2026-11-08' },
+      { label: 'ARR 截稿', date: '2026-05-19' },
+      { label: 'Commitment 截止', date: '2026-08-01' },
+      { label: '录用通知', date: '2026-08-20' },
+      { label: 'Camera-Ready', date: '2026-09-19' },
+      { label: '会议日期', date: '2026-11-04' },
     ]
   },
   {
@@ -53,10 +56,11 @@ const schedules: ScheduleEntry[] = [
     color: '#a855f7', website: 'https://2025.emnlp.org/',
     location: 'Suzhou, China',
     dates: [
-      { label: 'Abstract 截稿', date: '2025-06-15' },
-      { label: '全文截稿', date: '2025-06-22' },
-      { label: '录用通知', date: '2025-09-20' },
-      { label: '会议日期', date: '2025-11-08' },
+      { label: 'ARR 截稿', date: '2025-05-19' },
+      { label: 'Commitment 截止', date: '2025-08-01' },
+      { label: '录用通知', date: '2025-08-20' },
+      { label: 'Camera-Ready', date: '2025-09-19' },
+      { label: '会议日期', date: '2025-11-04' },
     ]
   },
   {
@@ -82,11 +86,12 @@ const schedules: ScheduleEntry[] = [
   {
     conf: 'ICLR', fullName: 'International Conference on Learning Representations', year: 2026,
     color: '#06b6d4', website: 'https://iclr.cc/Conferences/2026',
-    location: 'Singapore',
+    location: 'Rio de Janeiro, Brazil',
     dates: [
-      { label: '全文截稿', date: '2025-10-01' },
-      { label: '录用通知', date: '2026-01-22' },
-      { label: '会议日期', date: '2026-04-28' },
+      { label: '摘要截稿', date: '2025-09-20' },
+      { label: '全文截稿', date: '2025-09-25' },
+      { label: '录用通知', date: '2026-03-17' },
+      { label: '会议日期', date: '2026-04-23' },
     ]
   },
   {
@@ -94,9 +99,10 @@ const schedules: ScheduleEntry[] = [
     color: '#06b6d4', website: 'https://iclr.cc/Conferences/2025',
     location: 'Singapore',
     dates: [
-      { label: '全文截稿', date: '2024-10-01' },
+      { label: '摘要截稿', date: '2024-09-14' },
+      { label: '全文截稿', date: '2024-09-28' },
       { label: '录用通知', date: '2025-01-22' },
-      { label: '会议日期', date: '2025-04-28' },
+      { label: '会议日期', date: '2025-04-24' },
     ]
   },
   {
@@ -104,10 +110,10 @@ const schedules: ScheduleEntry[] = [
     color: '#eab308', website: 'https://neurips.cc/Conferences/2025',
     location: 'San Diego, USA',
     dates: [
-      { label: 'Abstract 截稿', date: '2025-05-15' },
-      { label: '全文截稿', date: '2025-05-22' },
-      { label: '录用通知', date: '2025-09-25' },
-      { label: '会议日期', date: '2025-12-08' },
+      { label: 'Abstract 截稿', date: '2025-05-11' },
+      { label: '全文截稿', date: '2025-05-16' },
+      { label: '录用通知', date: '2025-09-18' },
+      { label: '会议日期', date: '2025-12-01' },
     ]
   },
   {
@@ -115,10 +121,10 @@ const schedules: ScheduleEntry[] = [
     color: '#eab308', website: 'https://neurips.cc/Conferences/2026',
     location: '待定',
     dates: [
-      { label: 'Abstract 截稿', date: '2026-05-15' },
-      { label: '全文截稿', date: '2026-05-22' },
-      { label: '录用通知', date: '2026-09-25' },
-      { label: '会议日期', date: '2026-12-07' },
+      { label: 'Abstract 截稿', date: '2026-05-04' },
+      { label: '全文截稿', date: '2026-05-06' },
+      { label: '录用通知', date: '2026-09-18' },
+      { label: '会议日期', date: '2026-12-06' },
     ]
   },
 ]
