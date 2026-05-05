@@ -487,8 +487,10 @@ a.home-card{display:block;text-decoration:none;color:inherit}
 .deadline-countdown{font-size:12px;font-weight:700;color:var(--accent-text);white-space:nowrap;padding:2px 8px;border-radius:6px;background:var(--accent-light)}
 .deadline-countdown.urgent{color:#ef4444;background:rgba(239,68,68,0.15)}
 
-.conf-filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-.conf-filter-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-tertiary);background:var(--bg-card);border:1px solid var(--border);transition:all 0.2s cubic-bezier(0.4,0,0.2,1);user-select:none}
+.filter-section{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.filter-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.filter-label{font-size:12px;font-weight:600;color:var(--text-muted);min-width:32px;flex-shrink:0}
+.conf-filter-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-tertiary);background:var(--bg-card);border:1px solid var(--border);transition:all 0.2s cubic-bezier(0.4,0,0.2,1);user-select:none;white-space:nowrap}
 .conf-filter-btn:hover{border-color:var(--border-hover);color:var(--text-secondary);transform:translateY(-1px)}
 .conf-filter-btn.active{background:var(--accent-light);border-color:var(--accent);color:var(--accent-text);box-shadow:0 0 12px rgba(37,99,235,0.15)}
 .conf-filter-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
@@ -547,9 +549,6 @@ a.home-card{display:block;text-decoration:none;color:inherit}
 .expand-btn svg{transition:transform 0.25s cubic-bezier(0.4,0,0.2,1)}
 .expand-btn svg.rotated{transform:rotate(180deg)}
 
-/* Filter divider */
-.filter-divider{width:1px;height:24px;background:var(--border);margin:0 4px;flex-shrink:0}
-
 /* Compact timeline for older year cards */
 .schedule-timeline-compact{display:flex;flex-wrap:wrap;gap:6px 14px;margin-bottom:10px}
 .compact-date{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--text-tertiary);white-space:nowrap}
@@ -582,8 +581,9 @@ a.home-card{display:block;text-decoration:none;color:inherit}
 
 @media(max-width:768px){
   .schedule-grid{grid-template-columns:1fr}
-  .conf-filter-bar{gap:6px}
-  .conf-filter-btn{padding:6px 12px;font-size:12px}
+  .filter-row{gap:6px}
+  .conf-filter-btn{padding:5px 11px;font-size:12px}
+  .filter-label{min-width:28px;font-size:11px}
   .hero-countdown{padding:28px 20px}
   .timer-num{font-size:32px}
   .timer-sep{font-size:24px;padding-top:4px}

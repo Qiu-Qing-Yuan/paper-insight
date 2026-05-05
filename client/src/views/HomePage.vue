@@ -236,22 +236,27 @@ function toggleExpand(conf: string) {
           <span class="deadline-label">{{ d.label }}</span>
           <span class="deadline-date">{{ formatDate(d.date) }}</span>
           <span class="deadline-countdown" :class="{ urgent: daysUntil(d.date) <= 7 }" :style="daysUntil(d.date) > 7 ? { color: d.color } : {}">
-            {{ countdown(d.date).days }}天{{ pad(countdown(d.date).hours) }}:{{ pad(countdown(d.date).minutes) }}
+            {{ countdown(d.date).days }}天{{ pad(countdown(d.date).hours) }}:{{ pad(countdown(d.date).minutes) }}:{{ pad(countdown(d.date).seconds) }}
           </span>
         </div>
       </div>
     </div>
 
     <!-- Conference + Year filter -->
-    <div class="conf-filter-bar">
-      <button class="conf-filter-btn" :class="{ active: !selectedConf }" @click="selectedConf = null">全部</button>
-      <button v-for="conf in Object.keys(confColors)" :key="conf" class="conf-filter-btn" :class="{ active: selectedConf === conf }" @click="selectedConf = conf">
-        <span class="conf-filter-dot" :style="{ background: confColors[conf] }"></span>
-        {{ conf }}
-      </button>
-      <span class="filter-divider"></span>
-      <button class="conf-filter-btn" :class="{ active: !selectedYear }" @click="selectedYear = null">全部年份</button>
-      <button v-for="y in availableYears" :key="y" class="conf-filter-btn year-btn" :class="{ active: selectedYear === y }" @click="selectedYear = y">{{ y }}</button>
+    <div class="filter-section">
+      <div class="filter-row">
+        <span class="filter-label">会议</span>
+        <button class="conf-filter-btn" :class="{ active: !selectedConf }" @click="selectedConf = null">全部</button>
+        <button v-for="conf in Object.keys(confColors)" :key="conf" class="conf-filter-btn" :class="{ active: selectedConf === conf }" @click="selectedConf = conf">
+          <span class="conf-filter-dot" :style="{ background: confColors[conf] }"></span>
+          {{ conf }}
+        </button>
+      </div>
+      <div class="filter-row">
+        <span class="filter-label">年份</span>
+        <button class="conf-filter-btn" :class="{ active: !selectedYear }" @click="selectedYear = null">全部</button>
+        <button v-for="y in availableYears" :key="y" class="conf-filter-btn" :class="{ active: selectedYear === y }" @click="selectedYear = y">{{ y }}</button>
+      </div>
     </div>
 
     <!-- Conference schedule groups -->
@@ -307,6 +312,10 @@ function toggleExpand(conf: string) {
             <div class="mini-timer">
               <span class="mini-timer-num">{{ pad(countdown(nextDeadline(group.latest.dates)!.date).minutes) }}</span>
               <span class="mini-timer-unit">分</span>
+            </div>
+            <div class="mini-timer">
+              <span class="mini-timer-num">{{ pad(countdown(nextDeadline(group.latest.dates)!.date).seconds) }}</span>
+              <span class="mini-timer-unit">秒</span>
             </div>
           </div>
         </div>
