@@ -21,7 +21,14 @@ export const usePapersStore = defineStore('papers', () => {
   const conferences = ref<Conference[]>([])
   const externalLoading = ref(false)
 
-  const mainCount = computed(() => papers.value.filter(p => p.venue?.startsWith('主会')).length)
+  const mainCount = computed(() => papers.value.filter(p =>
+    p.venue?.startsWith('主会') || ['Oral', 'Spotlight', 'Poster'].includes(p.venue)
+  ).length)
+  const oralCount = computed(() => papers.value.filter(p => p.venue === 'Oral').length)
+  const spotlightCount = computed(() => papers.value.filter(p => p.venue === 'Spotlight').length)
+  const posterCount = computed(() => papers.value.filter(p => p.venue === 'Poster').length)
+  const longPaperCount = computed(() => papers.value.filter(p => p.venue === '主会-长文').length)
+  const shortPaperCount = computed(() => papers.value.filter(p => p.venue === '主会-短文').length)
   const findingsCount = computed(() => papers.value.filter(p => p.venue === 'Findings').length)
   const workshopCount = computed(() => papers.value.filter(p => p.venue?.startsWith('Workshop')).length)
   const translatedCount = computed(() => papers.value.filter(p => p.abstract_zh).length)
@@ -33,10 +40,17 @@ export const usePapersStore = defineStore('papers', () => {
 
   function getVenueClass(venue: string): string {
     if (!venue) return 'venue-other'
-    if (venue.indexOf('主会') === 0) return 'venue-main'
+    if (venue.startsWith('主会') || ['Oral', 'Spotlight', 'Poster'].includes(venue)) return 'venue-main'
     if (venue === 'Findings') return 'venue-findings'
-    if (venue.indexOf('Workshop') === 0) return 'venue-workshop'
+    if (venue.startsWith('Workshop')) return 'venue-workshop'
     return 'venue-other'
+  }
+
+  function getVenueLabel(venue: string): string {
+    if (!venue) return '未知'
+    if (venue === '主会-长文') return '长文'
+    if (venue === '主会-短文') return '短文'
+    return venue
   }
 
   function buildCategories(data: Paper[]) {
@@ -110,9 +124,11 @@ export const usePapersStore = defineStore('papers', () => {
   return {
     papers, aclPapers, categories, subcategories, catSubMap,
     lang, loading, error,
-    mainCount, findingsCount, workshopCount, translatedCount, hasVenueTypes,
+    mainCount, oralCount, spotlightCount, posterCount,
+    longPaperCount, shortPaperCount,
+    findingsCount, workshopCount, translatedCount, hasVenueTypes,
     activeConference, activeConferenceKey, conferences, externalLoading,
-    getSubName, getVenueClass, loadPapers,
+    getSubName, getVenueClass, getVenueLabel, loadPapers,
     loadConferences, switchConference,
   }
 })

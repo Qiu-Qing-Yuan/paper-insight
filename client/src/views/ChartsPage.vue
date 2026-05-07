@@ -38,7 +38,7 @@ const topSubs = computed(() => Object.entries(store.subcategories).sort((a, b) =
 const topMainRatio = computed(() => {
   return Object.keys(store.subcategories).map(sub => {
     const sp = store.papers.filter(p => p.subcategory === sub)
-    const mp = sp.filter(p => p.venue?.startsWith('主会'))
+    const mp = sp.filter(p => p.venue?.startsWith('主会') || ['Oral', 'Spotlight', 'Poster'].includes(p.venue))
     return { name: sub, ratio: sp.length > 0 ? mp.length / sp.length : 0, count: sp.length }
   }).filter(r => r.count >= 15).sort((a, b) => b.ratio - a.ratio).slice(0, 10)
 })
@@ -266,7 +266,7 @@ onUnmounted(() => {
             <div style="flex:1">
               <div class="paper-title">{{ paper.title }}</div>
               <div class="paper-meta">
-                <span class="venue-badge" :class="store.getVenueClass(paper.venue)">{{ paper.venue }}</span>
+                <span class="venue-badge" :class="store.getVenueClass(paper.venue)">{{ store.getVenueLabel(paper.venue) }}</span>
                 <span class="sub-badge">{{ paper.subcategory }}</span>
                 <a :href="scholarUrl(paper.title)" target="_blank" class="scholar-link" @click.stop>Google Scholar</a>
                 <span class="paper-authors">{{ (paper.authors||[]).slice(0,3).join(', ') }}</span>
@@ -297,7 +297,7 @@ onUnmounted(() => {
         <div class="card">
           <div class="detail-title">{{ detailPaper.title }}</div>
           <div class="detail-meta">
-            <span class="venue-badge" :class="store.getVenueClass(detailPaper.venue)" style="font-size:13px;padding:5px 14px">{{ detailPaper.venue }}</span>
+            <span class="venue-badge" :class="store.getVenueClass(detailPaper.venue)" style="font-size:13px;padding:5px 14px">{{ store.getVenueLabel(detailPaper.venue) }}</span>
             <span class="sub-badge" style="font-size:13px;padding:5px 14px">{{ detailPaper.subcategory }}</span>
           </div>
           <div style="margin-top:12px;color:rgba(255,255,255,0.6);font-size:14px"><strong>作者:</strong> {{ (detailPaper.authors||[]).join(', ') }}</div>

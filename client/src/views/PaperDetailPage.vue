@@ -180,7 +180,7 @@ onUnmounted(() => {
         <div class="card">
           <h1 class="detail-main-title">{{ paper.title }}</h1>
           <div class="detail-main-meta">
-            <span class="venue-badge" :class="store.getVenueClass(paper.venue)" style="font-size:12px;padding:4px 12px">{{ paper.venue }}</span>
+            <span class="venue-badge" :class="store.getVenueClass(paper.venue)" style="font-size:12px;padding:4px 12px">{{ store.getVenueLabel(paper.venue) }}</span>
             <span class="id-text">ID: {{ paper.id }}</span>
             <a v-if="paperLinkUrl(paper)" :href="paperLinkUrl(paper)" target="_blank" class="pdf-link">PDF</a>
             <a :href="scholarUrl(paper.title)" target="_blank" class="scholar-link" style="font-size:12px;padding:4px 12px">Google Scholar</a>
@@ -210,7 +210,7 @@ onUnmounted(() => {
           <div v-show="activeTab === 'detail'">
             <div class="detail-info-grid">
               <div class="detail-info-label">论文ID</div><div class="detail-info-value">{{ paper.id }}</div>
-              <div class="detail-info-label">会议类别</div><div class="detail-info-value"><span class="venue-badge" :class="store.getVenueClass(paper.venue)">{{ paper.venue }}</span></div>
+              <div class="detail-info-label">会议类别</div><div class="detail-info-value"><span class="venue-badge" :class="store.getVenueClass(paper.venue)">{{ store.getVenueLabel(paper.venue) }}</span></div>
               <div class="detail-info-label">一级方向</div><div class="detail-info-value">{{ paper.category }}</div>
               <div class="detail-info-label">细分方向</div><div class="detail-info-value">{{ paper.subcategory }}</div>
               <div class="detail-info-label">作者</div><div class="detail-info-value">{{ (paper.authors||[]).join(', ') }}</div>

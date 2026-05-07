@@ -105,7 +105,7 @@ async function parseAnthologyVolumes(year, volumes, source, onProgress) {
 
 async function fetchEMNLP(year = 2024, onProgress) {
   const volumes = [
-    { vol: `${year}.emnlp-main`, venueType: '主会' },
+    { vol: `${year}.emnlp-main`, venueType: '主会-长文' },
     { vol: `${year}.findings-emnlp`, venueType: 'Findings' },
   ];
   const papers = await parseAnthologyVolumes(year, volumes, 'EMNLP', onProgress);
@@ -129,8 +129,8 @@ async function fetchEMNLP(year = 2024, onProgress) {
 
 async function fetchACL(year = 2023, onProgress) {
   const volumes = [
-    { vol: `${year}.acl-long`, venueType: '主会' },
-    { vol: `${year}.acl-short`, venueType: '主会' },
+    { vol: `${year}.acl-long`, venueType: '主会-长文' },
+    { vol: `${year}.acl-short`, venueType: '主会-短文' },
     { vol: `${year}.findings-acl`, venueType: 'Findings' },
   ];
   const papers = parseAnthologyVolumes(year, volumes, 'ACL', onProgress);
@@ -217,8 +217,17 @@ async function fetchOpenReviewPapers(invitations, baseUrl, source, year, onProgr
         const lv = rawVenue.toLowerCase();
         if (lv.includes('withdrawn') || lv.includes('rejected') || lv.startsWith('submitted to')) continue;
 
-        // Classify venue type
-        const venueType = lv.includes('workshop') ? 'Workshop' : '主会';
+        // Classify venue type (fine-grained)
+        let venueType = '主会';
+        if (lv.includes('workshop')) {
+          venueType = 'Workshop';
+        } else if (lv.includes('oral')) {
+          venueType = 'Oral';
+        } else if (lv.includes('spotlight')) {
+          venueType = 'Spotlight';
+        } else if (lv.includes('poster')) {
+          venueType = 'Poster';
+        }
         papers.push({
           id: note.id || '',
           title: fieldValue(c, 'title'),

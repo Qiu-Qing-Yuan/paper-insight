@@ -9,6 +9,11 @@ const store = usePapersStore()
 const venueOptions = computed(() => {
   const opts: { value: string; label: string }[] = []
   if (store.mainCount > 0) opts.push({ value: '主会', label: `主会 (${store.mainCount})` })
+  if (store.oralCount > 0) opts.push({ value: 'Oral', label: `Oral (${store.oralCount})` })
+  if (store.spotlightCount > 0) opts.push({ value: 'Spotlight', label: `Spotlight (${store.spotlightCount})` })
+  if (store.posterCount > 0) opts.push({ value: 'Poster', label: `Poster (${store.posterCount})` })
+  if (store.longPaperCount > 0) opts.push({ value: '主会-长文', label: `长文 (${store.longPaperCount})` })
+  if (store.shortPaperCount > 0) opts.push({ value: '主会-短文', label: `短文 (${store.shortPaperCount})` })
   if (store.findingsCount > 0) opts.push({ value: 'Findings', label: `Findings (${store.findingsCount})` })
   if (store.workshopCount > 0) opts.push({ value: 'Workshop', label: `Workshop (${store.workshopCount})` })
   return opts
@@ -101,7 +106,7 @@ function scrollTopAndGo(p: number) {
           <div style="flex:1">
             <div class="paper-title">{{ paper.title }}</div>
             <div class="paper-meta">
-              <span class="venue-badge" :class="store.getVenueClass(paper.venue)">{{ paper.venue }}</span>
+              <span class="venue-badge" :class="store.getVenueClass(paper.venue)">{{ store.getVenueLabel(paper.venue) }}</span>
               <span class="sub-badge">{{ paper.subcategory }}</span>
               <a :href="scholarUrl(paper.title)" target="_blank" class="scholar-link" @click.stop>Google Scholar</a>
               <span class="paper-authors">{{ (paper.authors||[]).slice(0,3).join(', ') }}</span>

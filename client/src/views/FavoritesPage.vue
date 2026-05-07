@@ -31,7 +31,7 @@ function removeFavorite(id: string) {
         <div style="flex:1;cursor:pointer" @click="$router.push('/paper/' + encodeURIComponent(paper.id))">
           <div class="paper-title">{{ paper.title }}</div>
           <div class="paper-meta">
-            <span class="venue-badge" :class="store.getVenueClass(paper.venue)">{{ paper.venue }}</span>
+            <span class="venue-badge" :class="store.getVenueClass(paper.venue)">{{ store.getVenueLabel(paper.venue) }}</span>
             <span class="sub-badge">{{ paper.subcategory }}</span>
             <a :href="scholarUrl(paper.title)" target="_blank" class="scholar-link" @click.stop>Google Scholar</a>
           </div>

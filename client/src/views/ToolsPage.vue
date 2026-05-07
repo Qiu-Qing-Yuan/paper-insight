@@ -41,7 +41,7 @@ const topAuthors = computed(() => {
       <div v-for="paper in searchResults.slice(0, 50)" :key="paper.id" class="paper-item" @click="$router.push('/paper/' + encodeURIComponent(paper.id))">
         <div class="paper-title">{{ paper.title }}</div>
         <div class="paper-meta">
-          <span class="venue-badge" :class="store.getVenueClass(paper.venue)">{{ paper.venue }}</span>
+          <span class="venue-badge" :class="store.getVenueClass(paper.venue)">{{ store.getVenueLabel(paper.venue) }}</span>
           <span class="sub-badge">{{ paper.subcategory }}</span>
           <span class="paper-authors">{{ (paper.authors||[]).slice(0,3).join(', ') }}</span>
         </div>

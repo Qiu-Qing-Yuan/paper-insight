@@ -24,7 +24,15 @@ export function usePaperFilter() {
     let result = store.papers
     if (filter.category) result = result.filter(p => p.category === filter.category)
     if (filter.subcategory) result = result.filter(p => p.subcategory === filter.subcategory)
-    if (filter.venue) result = result.filter(p => p.venue === filter.venue)
+    if (filter.venue) {
+      if (filter.venue === '主会') {
+        result = result.filter(p =>
+          p.venue?.startsWith('主会') || ['Oral', 'Spotlight', 'Poster'].includes(p.venue)
+        )
+      } else {
+        result = result.filter(p => p.venue === filter.venue)
+      }
+    }
     if (filter.search) {
       const q = filter.search.toLowerCase()
       result = result.filter(p =>
