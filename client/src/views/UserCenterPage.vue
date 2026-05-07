@@ -62,9 +62,33 @@ function clearCache() {
             <span class="info-label">主会论文</span>
             <span class="info-value">{{ store.mainCount }} 篇</span>
           </div>
+          <div class="info-row" v-if="store.oralCount > 0">
+            <span class="info-label">Oral</span>
+            <span class="info-value">{{ store.oralCount }} 篇</span>
+          </div>
+          <div class="info-row" v-if="store.spotlightCount > 0">
+            <span class="info-label">Spotlight</span>
+            <span class="info-value">{{ store.spotlightCount }} 篇</span>
+          </div>
+          <div class="info-row" v-if="store.posterCount > 0">
+            <span class="info-label">Poster</span>
+            <span class="info-value">{{ store.posterCount }} 篇</span>
+          </div>
+          <div class="info-row" v-if="store.longPaperCount > 0">
+            <span class="info-label">长文</span>
+            <span class="info-value">{{ store.longPaperCount }} 篇</span>
+          </div>
+          <div class="info-row" v-if="store.shortPaperCount > 0">
+            <span class="info-label">短文</span>
+            <span class="info-value">{{ store.shortPaperCount }} 篇</span>
+          </div>
           <div class="info-row">
             <span class="info-label">Findings</span>
             <span class="info-value">{{ store.findingsCount }} 篇</span>
+          </div>
+          <div class="info-row" v-if="store.workshopCount > 0">
+            <span class="info-label">Workshop</span>
+            <span class="info-value">{{ store.workshopCount }} 篇</span>
           </div>
           <div class="info-row">
             <span class="info-label">已翻译</span>

@@ -24,7 +24,13 @@ const isACL = computed(() => store.activeConference === 'ACL')
       <template v-else>
         <div class="card stat-card stat-card-1"><div class="stat-number">{{ store.papers.length }}</div><div class="stat-label">总论文数</div></div>
         <div class="card stat-card stat-card-2" v-if="store.hasVenueTypes"><div class="stat-number">{{ store.mainCount }}</div><div class="stat-label">主会论文</div></div>
+        <div class="card stat-card stat-card-2" v-if="store.oralCount > 0"><div class="stat-number">{{ store.oralCount }}</div><div class="stat-label">Oral</div></div>
+        <div class="card stat-card stat-card-2" v-if="store.spotlightCount > 0"><div class="stat-number">{{ store.spotlightCount }}</div><div class="stat-label">Spotlight</div></div>
+        <div class="card stat-card stat-card-2" v-if="store.posterCount > 0"><div class="stat-number">{{ store.posterCount }}</div><div class="stat-label">Poster</div></div>
+        <div class="card stat-card stat-card-2" v-if="store.longPaperCount > 0"><div class="stat-number">{{ store.longPaperCount }}</div><div class="stat-label">长文</div></div>
+        <div class="card stat-card stat-card-2" v-if="store.shortPaperCount > 0"><div class="stat-number">{{ store.shortPaperCount }}</div><div class="stat-label">短文</div></div>
         <div class="card stat-card stat-card-3" v-if="store.hasVenueTypes"><div class="stat-number">{{ store.findingsCount }}</div><div class="stat-label">Findings</div></div>
+        <div class="card stat-card stat-card-3" v-if="store.workshopCount > 0"><div class="stat-number">{{ store.workshopCount }}</div><div class="stat-label">Workshop</div></div>
         <div class="card stat-card stat-card-4"><div class="stat-number">{{ Object.keys(store.subcategories).length }}</div><div class="stat-label">细分方向</div></div>
         <div class="card stat-card stat-card-5" v-if="isACL"><div class="stat-number">{{ store.translatedCount }}</div><div class="stat-label">已翻译</div></div>
       </template>
