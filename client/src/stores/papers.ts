@@ -31,6 +31,10 @@ export const usePapersStore = defineStore('papers', () => {
   const shortPaperCount = computed(() => papers.value.filter(p => p.venue === '主会-短文').length)
   const findingsCount = computed(() => papers.value.filter(p => p.venue === 'Findings').length)
   const workshopCount = computed(() => papers.value.filter(p => p.venue?.startsWith('Workshop')).length)
+  const demoCount = computed(() => papers.value.filter(p => p.venue === '系统演示').length)
+  const studentCount = computed(() => papers.value.filter(p => p.venue === '学生研讨会').length)
+  const tutorialCount = computed(() => papers.value.filter(p => p.venue === '教程').length)
+  const industryCount = computed(() => papers.value.filter(p => p.venue === '工业Track').length)
   const translatedCount = computed(() => papers.value.filter(p => p.abstract_zh).length)
   const hasVenueTypes = computed(() => mainCount.value > 0 || findingsCount.value > 0 || workshopCount.value > 0)
 
@@ -43,6 +47,7 @@ export const usePapersStore = defineStore('papers', () => {
     if (venue.startsWith('主会') || ['Oral', 'Spotlight', 'Poster'].includes(venue)) return 'venue-main'
     if (venue === 'Findings') return 'venue-findings'
     if (venue.startsWith('Workshop')) return 'venue-workshop'
+    if (['系统演示', '学生研讨会', '教程', '工业Track'].includes(venue)) return 'venue-workshop'
     return 'venue-other'
   }
 
@@ -126,7 +131,9 @@ export const usePapersStore = defineStore('papers', () => {
     lang, loading, error,
     mainCount, oralCount, spotlightCount, posterCount,
     longPaperCount, shortPaperCount,
-    findingsCount, workshopCount, translatedCount, hasVenueTypes,
+    findingsCount, workshopCount,
+    demoCount, studentCount, tutorialCount, industryCount,
+    translatedCount, hasVenueTypes,
     activeConference, activeConferenceKey, conferences, externalLoading,
     getSubName, getVenueClass, getVenueLabel, loadPapers,
     loadConferences, switchConference,

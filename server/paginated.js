@@ -35,7 +35,7 @@ function queryPapers({ page = 1, limit = 20, category, subcategory, venue, searc
   if (category) data = data.filter(p => p.category === category);
   if (subcategory) data = data.filter(p => p.subcategory === subcategory);
   if (venue) {
-    if (venue === '主会') data = data.filter(p => p.venue?.startsWith('主会'));
+    if (venue === '主会') data = data.filter(p => p.venue?.startsWith('主会') || ['Oral','Spotlight','Poster'].includes(p.venue));
     else if (venue === 'Workshop') data = data.filter(p => p.venue?.startsWith('Workshop'));
     else data = data.filter(p => p.venue === venue);
   }

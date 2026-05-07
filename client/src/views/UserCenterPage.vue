@@ -58,7 +58,7 @@ function clearCache() {
       <div class="card">
         <div class="card-title">平台统计</div>
         <div class="info-list">
-          <div class="info-row">
+          <div class="info-row" v-if="store.mainCount > 0">
             <span class="info-label">主会论文</span>
             <span class="info-value">{{ store.mainCount }} 篇</span>
           </div>
@@ -82,9 +82,25 @@ function clearCache() {
             <span class="info-label">短文</span>
             <span class="info-value">{{ store.shortPaperCount }} 篇</span>
           </div>
-          <div class="info-row">
+          <div class="info-row" v-if="store.findingsCount > 0">
             <span class="info-label">Findings</span>
             <span class="info-value">{{ store.findingsCount }} 篇</span>
+          </div>
+          <div class="info-row" v-if="store.industryCount > 0">
+            <span class="info-label">工业Track</span>
+            <span class="info-value">{{ store.industryCount }} 篇</span>
+          </div>
+          <div class="info-row" v-if="store.demoCount > 0">
+            <span class="info-label">系统演示</span>
+            <span class="info-value">{{ store.demoCount }} 篇</span>
+          </div>
+          <div class="info-row" v-if="store.studentCount > 0">
+            <span class="info-label">学生研讨会</span>
+            <span class="info-value">{{ store.studentCount }} 篇</span>
+          </div>
+          <div class="info-row" v-if="store.tutorialCount > 0">
+            <span class="info-label">教程</span>
+            <span class="info-value">{{ store.tutorialCount }} 篇</span>
           </div>
           <div class="info-row" v-if="store.workshopCount > 0">
             <span class="info-label">Workshop</span>

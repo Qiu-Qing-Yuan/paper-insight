@@ -257,7 +257,7 @@ onUnmounted(() => {
             <router-link v-for="rp in relatedPapers" :key="rp.id" :to="'/paper/' + encodeURIComponent(rp.id)" class="related-item">
               <div class="related-item-title">{{ rp.title }}</div>
               <div class="related-item-meta">
-                <span class="venue-badge" :class="store.getVenueClass(rp.venue)" style="font-size:10px;padding:2px 8px">{{ rp.venue }}</span>
+                <span class="venue-badge" :class="store.getVenueClass(rp.venue)" style="font-size:10px;padding:2px 8px">{{ store.getVenueLabel(rp.venue) }}</span>
                 <a :href="scholarUrl(rp.title)" target="_blank" class="scholar-link" @click.stop>Google Scholar</a>
               </div>
             </router-link>
