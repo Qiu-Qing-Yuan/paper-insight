@@ -21,9 +21,7 @@ export const usePapersStore = defineStore('papers', () => {
   const conferences = ref<Conference[]>([])
   const externalLoading = ref(false)
 
-  const mainCount = computed(() => papers.value.filter(p =>
-    p.venue?.startsWith('主会') || ['Oral', 'Spotlight', 'Poster'].includes(p.venue)
-  ).length)
+  // Fine-grained counts
   const oralCount = computed(() => papers.value.filter(p => p.venue === 'Oral').length)
   const spotlightCount = computed(() => papers.value.filter(p => p.venue === 'Spotlight').length)
   const posterCount = computed(() => papers.value.filter(p => p.venue === 'Poster').length)
@@ -35,8 +33,33 @@ export const usePapersStore = defineStore('papers', () => {
   const studentCount = computed(() => papers.value.filter(p => p.venue === '学生研讨会').length)
   const tutorialCount = computed(() => papers.value.filter(p => p.venue === '教程').length)
   const industryCount = computed(() => papers.value.filter(p => p.venue === '工业Track').length)
+
+  // Grouped counts
+  const mainCount = computed(() => papers.value.filter(p =>
+    p.venue?.startsWith('主会') || ['Oral', 'Spotlight', 'Poster'].includes(p.venue)
+  ).length)
+  const otherCount = computed(() => demoCount.value + studentCount.value + tutorialCount.value + industryCount.value)
   const translatedCount = computed(() => papers.value.filter(p => p.abstract_zh).length)
   const hasVenueTypes = computed(() => mainCount.value > 0 || findingsCount.value > 0 || workshopCount.value > 0)
+  const isOpenReview = computed(() => ['ICML', 'ICLR', 'NeurIPS'].includes(activeConference.value))
+
+  // Conference-appropriate venue filter options
+  const venueFilterOptions = computed(() => {
+    const opts: { value: string; label: string }[] = []
+    if (isOpenReview.value) {
+      // OpenReview: show Oral/Spotlight/Poster individually
+      if (oralCount.value > 0) opts.push({ value: 'Oral', label: `Oral (${oralCount.value})` })
+      if (spotlightCount.value > 0) opts.push({ value: 'Spotlight', label: `Spotlight (${spotlightCount.value})` })
+      if (posterCount.value > 0) opts.push({ value: 'Poster', label: `Poster (${posterCount.value})` })
+    } else {
+      // ACL/EMNLP: show 主会 (grouped), Findings, 其他, Workshop
+      if (mainCount.value > 0) opts.push({ value: '主会', label: `主会 (${mainCount.value})` })
+      if (findingsCount.value > 0) opts.push({ value: 'Findings', label: `Findings (${findingsCount.value})` })
+      if (otherCount.value > 0) opts.push({ value: '其他', label: `其他 (${otherCount.value})` })
+    }
+    if (workshopCount.value > 0) opts.push({ value: 'Workshop', label: `Workshop (${workshopCount.value})` })
+    return opts
+  })
 
   function getSubName(zhName: string): string {
     return lang.value === 'en' ? (SUBCATEGORY_EN[zhName] || zhName) : zhName
@@ -131,9 +154,8 @@ export const usePapersStore = defineStore('papers', () => {
     lang, loading, error,
     mainCount, oralCount, spotlightCount, posterCount,
     longPaperCount, shortPaperCount,
-    findingsCount, workshopCount,
-    demoCount, studentCount, tutorialCount, industryCount,
-    translatedCount, hasVenueTypes,
+    findingsCount, workshopCount, otherCount,
+    translatedCount, hasVenueTypes, isOpenReview, venueFilterOptions,
     activeConference, activeConferenceKey, conferences, externalLoading,
     getSubName, getVenueClass, getVenueLabel, loadPapers,
     loadConferences, switchConference,

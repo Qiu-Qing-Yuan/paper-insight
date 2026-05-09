@@ -6,22 +6,7 @@ import { scholarUrl } from '../utils'
 
 const store = usePapersStore()
 
-const venueOptions = computed(() => {
-  const opts: { value: string; label: string }[] = []
-  if (store.mainCount > 0) opts.push({ value: '主会', label: `主会 (${store.mainCount})` })
-  if (store.oralCount > 0) opts.push({ value: 'Oral', label: `Oral (${store.oralCount})` })
-  if (store.spotlightCount > 0) opts.push({ value: 'Spotlight', label: `Spotlight (${store.spotlightCount})` })
-  if (store.posterCount > 0) opts.push({ value: 'Poster', label: `Poster (${store.posterCount})` })
-  if (store.longPaperCount > 0) opts.push({ value: '主会-长文', label: `长文 (${store.longPaperCount})` })
-  if (store.shortPaperCount > 0) opts.push({ value: '主会-短文', label: `短文 (${store.shortPaperCount})` })
-  if (store.findingsCount > 0) opts.push({ value: 'Findings', label: `Findings (${store.findingsCount})` })
-  if (store.industryCount > 0) opts.push({ value: '工业Track', label: `工业Track (${store.industryCount})` })
-  if (store.demoCount > 0) opts.push({ value: '系统演示', label: `系统演示 (${store.demoCount})` })
-  if (store.studentCount > 0) opts.push({ value: '学生研讨会', label: `学生研讨会 (${store.studentCount})` })
-  if (store.tutorialCount > 0) opts.push({ value: '教程', label: `教程 (${store.tutorialCount})` })
-  if (store.workshopCount > 0) opts.push({ value: 'Workshop', label: `Workshop (${store.workshopCount})` })
-  return opts
-})
+const venueOptions = computed(() => store.venueFilterOptions)
 
 const {
   category, subcategory, venue, search, sortBy,

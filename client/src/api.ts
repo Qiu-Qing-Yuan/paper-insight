@@ -87,6 +87,7 @@ export async function queryPapers(params: QueryParams, sourceData?: Paper[]): Pr
   if (params.subcategory) data = data.filter(p => p.subcategory === params.subcategory)
   if (params.venue) {
     if (params.venue === '主会') data = data.filter(p => p.venue?.startsWith('主会') || ['Oral','Spotlight','Poster'].includes(p.venue))
+    else if (params.venue === '其他') data = data.filter(p => ['系统演示','学生研讨会','教程','工业Track'].includes(p.venue))
     else if (params.venue === 'Workshop') data = data.filter(p => p.venue?.startsWith('Workshop'))
     else data = data.filter(p => p.venue === params.venue)
   }

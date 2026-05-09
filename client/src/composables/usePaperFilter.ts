@@ -29,6 +29,8 @@ export function usePaperFilter() {
         result = result.filter(p =>
           p.venue?.startsWith('主会') || ['Oral', 'Spotlight', 'Poster'].includes(p.venue)
         )
+      } else if (filter.venue === '其他') {
+        result = result.filter(p => ['系统演示', '学生研讨会', '教程', '工业Track'].includes(p.venue))
       } else {
         result = result.filter(p => p.venue === filter.venue)
       }

@@ -58,50 +58,33 @@ function clearCache() {
       <div class="card">
         <div class="card-title">平台统计</div>
         <div class="info-list">
-          <div class="info-row" v-if="store.mainCount > 0">
+          <!-- ACL/EMNLP categories -->
+          <div class="info-row" v-if="!store.isOpenReview && store.mainCount > 0">
             <span class="info-label">主会论文</span>
             <span class="info-value">{{ store.mainCount }} 篇</span>
           </div>
-          <div class="info-row" v-if="store.oralCount > 0">
-            <span class="info-label">Oral</span>
-            <span class="info-value">{{ store.oralCount }} 篇</span>
-          </div>
-          <div class="info-row" v-if="store.spotlightCount > 0">
-            <span class="info-label">Spotlight</span>
-            <span class="info-value">{{ store.spotlightCount }} 篇</span>
-          </div>
-          <div class="info-row" v-if="store.posterCount > 0">
-            <span class="info-label">Poster</span>
-            <span class="info-value">{{ store.posterCount }} 篇</span>
-          </div>
-          <div class="info-row" v-if="store.longPaperCount > 0">
-            <span class="info-label">长文</span>
-            <span class="info-value">{{ store.longPaperCount }} 篇</span>
-          </div>
-          <div class="info-row" v-if="store.shortPaperCount > 0">
-            <span class="info-label">短文</span>
-            <span class="info-value">{{ store.shortPaperCount }} 篇</span>
-          </div>
-          <div class="info-row" v-if="store.findingsCount > 0">
+          <div class="info-row" v-if="!store.isOpenReview && store.findingsCount > 0">
             <span class="info-label">Findings</span>
             <span class="info-value">{{ store.findingsCount }} 篇</span>
           </div>
-          <div class="info-row" v-if="store.industryCount > 0">
-            <span class="info-label">工业Track</span>
-            <span class="info-value">{{ store.industryCount }} 篇</span>
+          <div class="info-row" v-if="!store.isOpenReview && store.otherCount > 0">
+            <span class="info-label">其他</span>
+            <span class="info-value">{{ store.otherCount }} 篇</span>
           </div>
-          <div class="info-row" v-if="store.demoCount > 0">
-            <span class="info-label">系统演示</span>
-            <span class="info-value">{{ store.demoCount }} 篇</span>
+          <!-- OpenReview categories -->
+          <div class="info-row" v-if="store.isOpenReview && store.oralCount > 0">
+            <span class="info-label">Oral</span>
+            <span class="info-value">{{ store.oralCount }} 篇</span>
           </div>
-          <div class="info-row" v-if="store.studentCount > 0">
-            <span class="info-label">学生研讨会</span>
-            <span class="info-value">{{ store.studentCount }} 篇</span>
+          <div class="info-row" v-if="store.isOpenReview && store.spotlightCount > 0">
+            <span class="info-label">Spotlight</span>
+            <span class="info-value">{{ store.spotlightCount }} 篇</span>
           </div>
-          <div class="info-row" v-if="store.tutorialCount > 0">
-            <span class="info-label">教程</span>
-            <span class="info-value">{{ store.tutorialCount }} 篇</span>
+          <div class="info-row" v-if="store.isOpenReview && store.posterCount > 0">
+            <span class="info-label">Poster</span>
+            <span class="info-value">{{ store.posterCount }} 篇</span>
           </div>
+          <!-- Common -->
           <div class="info-row" v-if="store.workshopCount > 0">
             <span class="info-label">Workshop</span>
             <span class="info-value">{{ store.workshopCount }} 篇</span>
