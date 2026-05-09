@@ -45,17 +45,21 @@ export const usePapersStore = defineStore('papers', () => {
 
   // Conference-appropriate venue filter options
   const venueFilterOptions = computed(() => {
-    const opts: { value: string; label: string }[] = []
+    const opts: { value: string; label: string; group?: string }[] = []
     if (isOpenReview.value) {
-      // OpenReview: show Oral/Spotlight/Poster individually
       if (oralCount.value > 0) opts.push({ value: 'Oral', label: `Oral (${oralCount.value})` })
       if (spotlightCount.value > 0) opts.push({ value: 'Spotlight', label: `Spotlight (${spotlightCount.value})` })
       if (posterCount.value > 0) opts.push({ value: 'Poster', label: `Poster (${posterCount.value})` })
     } else {
-      // ACL/EMNLP: show 主会 (grouped), Findings, 其他, Workshop
       if (mainCount.value > 0) opts.push({ value: '主会', label: `主会 (${mainCount.value})` })
       if (findingsCount.value > 0) opts.push({ value: 'Findings', label: `Findings (${findingsCount.value})` })
-      if (otherCount.value > 0) opts.push({ value: '其他', label: `其他 (${otherCount.value})` })
+      if (otherCount.value > 0) {
+        opts.push({ value: '其他', label: `其他 (${otherCount.value})` })
+        if (industryCount.value > 0) opts.push({ value: '工业Track', label: `工业Track (${industryCount.value})`, group: '其他' })
+        if (demoCount.value > 0) opts.push({ value: '系统演示', label: `系统演示 (${demoCount.value})`, group: '其他' })
+        if (studentCount.value > 0) opts.push({ value: '学生研讨会', label: `学生研讨会 (${studentCount.value})`, group: '其他' })
+        if (tutorialCount.value > 0) opts.push({ value: '教程', label: `教程 (${tutorialCount.value})`, group: '其他' })
+      }
     }
     if (workshopCount.value > 0) opts.push({ value: 'Workshop', label: `Workshop (${workshopCount.value})` })
     return opts

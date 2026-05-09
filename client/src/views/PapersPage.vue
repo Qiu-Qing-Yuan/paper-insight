@@ -60,7 +60,10 @@ function scrollTopAndGo(p: number) {
           <label>会议类别</label>
           <select v-model="venue" @change="applyFilter">
             <option value="">全部类别</option>
-            <option v-for="opt in venueOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+            <template v-for="opt in venueOptions" :key="opt.value">
+              <option v-if="!opt.group" :value="opt.value">{{ opt.label }}</option>
+              <option v-else :value="opt.value" style="padding-left:20px">└ {{ opt.label }}</option>
+            </template>
           </select>
         </div>
         <div class="filter-group">

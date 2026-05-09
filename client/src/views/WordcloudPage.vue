@@ -212,7 +212,7 @@ onUnmounted(() => {
       <div class="filters">
         <div class="filter-group"><label>一级方向</label><select v-model="filter.category" @change="onFilterChange"><option value="">全部方向</option><option v-for="c in sortedCategories" :key="c" :value="c">{{ c }} ({{ store.categories[c] }})</option></select></div>
         <div class="filter-group"><label>细分方向</label><select v-model="filter.subcategory" @change="onFilterChange"><option value="">全部细分</option><option v-for="s in sortedSubcategories" :key="s" :value="s">{{ s }} ({{ store.subcategories[s] }})</option></select></div>
-        <div class="filter-group" v-if="venueOptions.length > 0"><label>会议类别</label><select v-model="filter.venue" @change="onFilterChange"><option value="">全部类别</option><option v-for="opt in venueOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option></select></div>
+        <div class="filter-group" v-if="venueOptions.length > 0"><label>会议类别</label><select v-model="filter.venue" @change="onFilterChange"><option value="">全部类别</option><template v-for="opt in venueOptions" :key="opt.value"><option v-if="!opt.group" :value="opt.value">{{ opt.label }}</option><option v-else :value="opt.value" style="padding-left:20px">└ {{ opt.label }}</option></template></select></div>
         <div class="filter-group"><label>关键词搜索</label><input v-model="filter.search" @input="onFilterChange" placeholder="搜索标题、摘要..."></div>
       </div>
       <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:16px">
