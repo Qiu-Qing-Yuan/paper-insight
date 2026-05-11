@@ -25,14 +25,14 @@ const isACL = computed(() => store.activeConference === 'ACL')
         <div class="card stat-card stat-card-1"><div class="stat-number">{{ store.papers.length }}</div><div class="stat-label">总论文数</div></div>
         <!-- ACL/EMNLP: 主会 (grouped) + Findings + 其他 -->
         <div class="card stat-card stat-card-2" v-if="!store.isOpenReview && store.mainCount > 0"><div class="stat-number">{{ store.mainCount }}</div><div class="stat-label">主会论文</div></div>
-        <div class="card stat-card stat-card-3" v-if="!store.isOpenReview && store.findingsCount > 0"><div class="stat-number">{{ store.findingsCount }}</div><div class="stat-label">Findings</div></div>
+        <div class="card stat-card stat-card-3" v-if="!store.isOpenReview && store.findingsCount > 0"><div class="stat-number">{{ store.findingsCount }}</div><div class="stat-label">已收录</div></div>
         <div class="card stat-card stat-card-3" v-if="!store.isOpenReview && store.otherCount > 0"><div class="stat-number">{{ store.otherCount }}</div><div class="stat-label">其他</div></div>
         <!-- OpenReview (ICML/ICLR/NeurIPS): Oral + Spotlight + Poster -->
         <div class="card stat-card stat-card-2" v-if="store.isOpenReview && store.oralCount > 0"><div class="stat-number">{{ store.oralCount }}</div><div class="stat-label">Oral</div></div>
         <div class="card stat-card stat-card-2" v-if="store.isOpenReview && store.spotlightCount > 0"><div class="stat-number">{{ store.spotlightCount }}</div><div class="stat-label">Spotlight</div></div>
         <div class="card stat-card stat-card-2" v-if="store.isOpenReview && store.posterCount > 0"><div class="stat-number">{{ store.posterCount }}</div><div class="stat-label">Poster</div></div>
         <!-- Common -->
-        <div class="card stat-card stat-card-3" v-if="store.workshopCount > 0"><div class="stat-number">{{ store.workshopCount }}</div><div class="stat-label">Workshop</div></div>
+        <div class="card stat-card stat-card-3" v-if="store.workshopCount > 0"><div class="stat-number">{{ store.workshopCount }}</div><div class="stat-label">研讨会</div></div>
         <div class="card stat-card stat-card-4"><div class="stat-number">{{ Object.keys(store.subcategories).length }}</div><div class="stat-label">细分方向</div></div>
         <div class="card stat-card stat-card-5" v-if="isACL"><div class="stat-number">{{ store.translatedCount }}</div><div class="stat-label">已翻译</div></div>
       </template>
