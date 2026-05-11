@@ -52,7 +52,7 @@ export const usePapersStore = defineStore('papers', () => {
       if (posterCount.value > 0) opts.push({ value: 'Poster', label: `Poster (${posterCount.value})` })
     } else {
       if (mainCount.value > 0) opts.push({ value: '主会', label: `主会 (${mainCount.value})` })
-      if (findingsCount.value > 0) opts.push({ value: 'Findings', label: `已收录 (${findingsCount.value})` })
+      if (findingsCount.value > 0) opts.push({ value: 'Findings', label: `Findings (${findingsCount.value})` })
       if (otherCount.value > 0) {
         opts.push({ value: '其他', label: `其他 (${otherCount.value})` })
         if (industryCount.value > 0) opts.push({ value: '工业Track', label: `工业 (${industryCount.value})`, group: '其他' })
@@ -61,7 +61,7 @@ export const usePapersStore = defineStore('papers', () => {
         if (tutorialCount.value > 0) opts.push({ value: '教程', label: `教程 (${tutorialCount.value})`, group: '其他' })
       }
     }
-    if (workshopCount.value > 0) opts.push({ value: 'Workshop', label: `研讨会 (${workshopCount.value})` })
+    if (workshopCount.value > 0) opts.push({ value: 'Workshop', label: `Workshop (${workshopCount.value})` })
     return opts
   })
 
@@ -82,11 +82,6 @@ export const usePapersStore = defineStore('papers', () => {
     if (!venue) return '未知'
     if (venue === '主会-长文') return '长文'
     if (venue === '主会-短文') return '短文'
-    if (venue === 'Findings') return '已收录'
-    if (venue.startsWith('Workshop')) return '研讨会'
-    if (venue === '工业Track') return '工业'
-    if (venue === '系统演示') return '演示'
-    if (venue === '学生研讨会') return '学生'
     return venue
   }
 

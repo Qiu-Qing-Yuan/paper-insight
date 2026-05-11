@@ -64,8 +64,12 @@ function clearCache() {
             <span class="info-value">{{ store.mainCount }} 篇</span>
           </div>
           <div class="info-row" v-if="!store.isOpenReview && store.findingsCount > 0">
-            <span class="info-label">已收录</span>
+            <span class="info-label">Findings</span>
             <span class="info-value">{{ store.findingsCount }} 篇</span>
+          </div>
+          <div class="info-row" v-if="!store.isOpenReview && store.workshopCount > 0">
+            <span class="info-label">Workshop</span>
+            <span class="info-value">{{ store.workshopCount }} 篇</span>
           </div>
           <div class="info-row" v-if="!store.isOpenReview && store.otherCount > 0">
             <span class="info-label">其他</span>
@@ -83,15 +87,6 @@ function clearCache() {
           <div class="info-row" v-if="store.isOpenReview && store.posterCount > 0">
             <span class="info-label">Poster</span>
             <span class="info-value">{{ store.posterCount }} 篇</span>
-          </div>
-          <!-- Common -->
-          <div class="info-row" v-if="store.workshopCount > 0">
-            <span class="info-label">研讨会</span>
-            <span class="info-value">{{ store.workshopCount }} 篇</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">已翻译</span>
-            <span class="info-value">{{ store.translatedCount }} 篇</span>
           </div>
           <div class="info-row">
             <span class="info-label">细分方向</span>
